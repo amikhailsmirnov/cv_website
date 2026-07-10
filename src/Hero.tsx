@@ -12,76 +12,100 @@ const contactIcon = (href: string): LucideIcon => {
   return Send;
 };
 
-// A human↔robot profile-turn clip, e.g. the head rotating from a straight-on
-// human side profile at one end to a full robot side profile at the other.
-// It is never played — it's scrubbed by cursor/touch position, like a
-// filmstrip. Left end (t=0) = human side profile = Business Dev. Right end
-// (t=duration) = robot side profile = AI Agents.
-const HERO_VIDEO = '/hero.mp4';
+// Two clips, one per side. Neither ever autoplays — they're scrubbed by
+// cursor/touch position like a filmstrip. From the center of the screen,
+// dragging LEFT winds the Business Dev clip forward (fully wound at the
+// left lock zone), dragging RIGHT winds the AI clip forward. The two
+// crossfade at the center. Locked into a zone, the clip freezes on its
+// final frame so the matching CV can be read in peace.
+const VIDEO_SRC: Record<Mode, string> = {
+  bd: '/hero-bd.mp4',
+  ai: '/hero-ai.mp4',
+};
 
 // Per-frame easing toward the cursor-mapped target position (0..1).
 const LERP = 0.1;
 
 // The outer band on each side is the "reveal zone": drag far enough into it
-// and the clip snaps to that end's clean profile shot and locks there — no
-// more tracking the cursor — so the matching CV freezes on screen to read.
-// The middle band is a live pass-through: the clip just follows the cursor,
-// mid-turn, and nothing locks in yet. Unlock thresholds sit slightly inside
-// the lock thresholds so hovering right at the edge doesn't flicker.
+// and that side's clip snaps to its final frame and locks there — no more
+// tracking the cursor — so the matching CV freezes on screen to read. The
+// middle band is a live pass-through: the clips just wind with the cursor,
+// and nothing locks in yet. Unlock thresholds sit slightly inside the lock
+// thresholds so hovering right at the edge doesn't flicker.
 const LOCK_BD = 0.3;
 const LOCK_AI = 0.7;
 const UNLOCK_BD = 0.38;
 const UNLOCK_AI = 0.62;
+
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
 const MODES: Mode[] = ['bd', 'ai'];
 
 export default function Hero() {
   const { mode, setMode } = useMode();
 
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const bdRef = useRef<HTMLVideoElement>(null);
+  const aiRef = useRef<HTMLVideoElement>(null);
   const [videoReady, setVideoReady] = useState(false);
-  // hero.mp4 hasn't landed yet — until it does, the scrub clip is replaced by
-  // a static human/robot split so the hero never shows a broken frame.
+  // If either clip fails to load/decode, fall back to the static split so
+  // the hero never shows a broken frame.
   const [videoAvailable, setVideoAvailable] = useState(true);
   // Past the hero, the fixed nav compacts: sub-pill hides and the toggle gets
   // an opaque backing so it stays legible over section text.
   const [scrolled, setScrolled] = useState(false);
-  const isSeeking = useRef(false);
+  const seekingBd = useRef(false);
+  const seekingAi = useRef(false);
 
   // Mutable scrub state — kept in refs so it survives re-renders without
-  // triggering them. target: where the clip should ease toward (0 = human
-  // profile, 1 = robot profile, in between = mid-turn). smooth: the eased
-  // value that actually drives the seek/spotlight. locked: which side (if
-  // any) is currently pinned — while locked, cursor movement inside that same
-  // reveal zone is ignored so the freeze-frame holds still to read.
-  const target = useRef(0.5);
-  const smooth = useRef(0.5);
-  const locked = useRef<Mode | null>(null);
+  // triggering them. target: where the scrub should ease toward across the
+  // full window width (0 = far left / BD fully wound, 0.5 = center / both
+  // clips at their first frame, 1 = far right / AI fully wound). smooth:
+  // the eased value that actually drives the seeks and the crossfade.
+  // locked: which side (if any) is pinned — while locked, cursor movement
+  // inside that same reveal zone is ignored so the freeze-frame holds still.
+  // The site opens in AI mode, so start locked on the AI clip's final frame.
+  const target = useRef(1);
+  const smooth = useRef(1);
+  const locked = useRef<Mode | null>('ai');
   const spotlightRef = useRef<HTMLDivElement>(null);
   const seamRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const video = videoRef.current;
+    const bd = bdRef.current;
+    const ai = aiRef.current;
 
     const onLoaded = () => setVideoReady(true);
     const onError = () => setVideoAvailable(false);
 
-    // The browser processes one seek at a time. When a seek finishes, if the
-    // smoothed target has moved on, chain another seek so none are dropped.
-    const onSeeked = () => {
-      isSeeking.current = false;
-      if (video && video.duration && Math.abs(smooth.current * video.duration - video.currentTime) > 0.01) {
-        requestSeek();
-      }
+    // How far each side's clip is wound, given the smoothed cursor position.
+    const bdProgress = () => clamp01((0.5 - smooth.current) / (0.5 - LOCK_BD));
+    const aiProgress = () => clamp01((smooth.current - 0.5) / (LOCK_AI - 0.5));
+
+    // The browser processes one seek per video at a time. When a seek
+    // finishes, if the smoothed target has moved on, chain another one so
+    // none are dropped.
+    const requestSeek = (
+      video: HTMLVideoElement | null,
+      progress: number,
+      seeking: { current: boolean },
+    ) => {
+      if (!video || !video.duration) return;
+      // Hold just shy of the very last frame — seeking to the exact end can
+      // show black on some encoders.
+      const nextTime = progress * Math.max(0, video.duration - 0.05);
+      if (seeking.current) return;
+      if (Math.abs(nextTime - video.currentTime) < 0.01) return;
+      seeking.current = true;
+      video.currentTime = nextTime;
     };
 
-    const requestSeek = () => {
-      if (!video || !video.duration) return;
-      const nextTime = smooth.current * video.duration;
-      if (isSeeking.current) return;
-      if (Math.abs(nextTime - video.currentTime) < 0.01) return;
-      isSeeking.current = true;
-      video.currentTime = nextTime;
+    const onSeekedBd = () => {
+      seekingBd.current = false;
+      requestSeek(bd, bdProgress(), seekingBd);
+    };
+    const onSeekedAi = () => {
+      seekingAi.current = false;
+      requestSeek(ai, aiProgress(), seekingAi);
     };
 
     const setTargetFromX = (clientX: number) => {
@@ -135,10 +159,17 @@ export default function Hero() {
     const tick = () => {
       smooth.current += (target.current - smooth.current) * LERP;
 
-      if (video && video.duration) {
-        requestSeek();
+      const haveVideo = (bd && bd.duration) || (ai && ai.duration);
+      if (haveVideo) {
+        requestSeek(bd, bdProgress(), seekingBd);
+        requestSeek(ai, aiProgress(), seekingAi);
+        // Crossfade around the center: BD clip owns the left half, AI clip
+        // the right, blending across a narrow band in the middle.
+        const aiOpacity = clamp01((smooth.current - 0.45) / 0.1);
+        if (bd) bd.style.opacity = String(1 - aiOpacity);
+        if (ai) ai.style.opacity = String(aiOpacity);
       } else {
-        // No clip yet — drive the fallback spotlight instead.
+        // No clips yet — drive the fallback spotlight instead.
         const pct = smooth.current * 100;
         if (spotlightRef.current) spotlightRef.current.style.left = `${pct}%`;
         if (seamRef.current) {
@@ -150,7 +181,11 @@ export default function Hero() {
     };
     rafId = requestAnimationFrame(tick);
 
-    if (video) {
+    for (const [video, onSeeked] of [
+      [bd, onSeekedBd],
+      [ai, onSeekedAi],
+    ] as const) {
+      if (!video) continue;
       video.pause();
       video.addEventListener('loadeddata', onLoaded);
       video.addEventListener('seeked', onSeeked);
@@ -167,7 +202,11 @@ export default function Hero() {
 
     return () => {
       cancelAnimationFrame(rafId);
-      if (video) {
+      for (const [video, onSeeked] of [
+        [bd, onSeekedBd],
+        [ai, onSeekedAi],
+      ] as const) {
+        if (!video) continue;
         video.removeEventListener('loadeddata', onLoaded);
         video.removeEventListener('seeked', onSeeked);
         video.removeEventListener('error', onError);
@@ -196,10 +235,10 @@ export default function Hero() {
       className="relative w-full overflow-hidden h-screen h-[100dvh] bg-white"
       style={{ height: '100dvh' }}
     >
-      {/* PORTRAIT — human/BD at the left end of the clip, robot/AI at the
-          right end. Cursor or touch drag scrubs it like a filmstrip; letting
-          go leaves it frozen on that frame. Crossing the center flips the
-          whole site's mode. */}
+      {/* PORTRAIT — two clips, BD and AI, scrubbed by cursor/touch like a
+          filmstrip and crossfaded at the screen's center. Letting go leaves
+          the active clip frozen on its current frame. Locking into a side
+          zone flips the whole site's mode. */}
       {/* The wrap's bottom padding reserves room for the absolutely-positioned
           headline block, so the height-driven card never slides under it on
           short/mobile viewports. */}
@@ -208,16 +247,30 @@ export default function Hero() {
           className="relative h-full max-h-[560px] max-w-[86vw] aspect-[3/4] rounded-[2rem] overflow-hidden select-none bg-neutral-100"
           style={{ touchAction: 'pan-y' }}
         >
-          <video
-            ref={videoRef}
-            src={HERO_VIDEO}
-            muted
-            playsInline
-            preload="auto"
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+          <div
+            className={`absolute inset-0 transition-opacity duration-700 ${
               videoAvailable && videoReady ? 'opacity-100' : 'opacity-0'
             }`}
-          />
+          >
+            <video
+              ref={bdRef}
+              src={VIDEO_SRC.bd}
+              muted
+              playsInline
+              preload="auto"
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ opacity: 0 }}
+            />
+            <video
+              ref={aiRef}
+              src={VIDEO_SRC.ai}
+              muted
+              playsInline
+              preload="auto"
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ opacity: 1 }}
+            />
+          </div>
 
           {(!videoAvailable || !videoReady) && (
             <div className="absolute inset-0 flex">
