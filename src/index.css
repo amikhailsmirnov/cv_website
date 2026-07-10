@@ -14,13 +14,24 @@
 
 /* Hero bottom fade — the portrait dissolves into the white page. */
 .hero-gradient {
-  height: 42%;
+  height: 48%;
   background: linear-gradient(
     to bottom,
     rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.6) 45%,
-    #ffffff 85%
+    rgba(255, 255, 255, 0.3) 25%,
+    rgba(255, 255, 255, 0.65) 55%,
+    #ffffff 88%
   );
+}
+
+/* Drag hint — auto-fades after a few seconds, no JS needed. */
+@keyframes hintFade {
+  0%, 60% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.scrub-hint {
+  animation: hintFade 3.5s ease-out 1.2s both;
+  pointer-events: none;
 }
 
 /* Lenis smooth scroll */

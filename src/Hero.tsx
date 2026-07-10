@@ -244,7 +244,7 @@ export default function Hero() {
           block below. */}
       <div className="absolute inset-0 z-10 flex justify-center items-center pt-24 pb-72 md:pt-20 md:pb-32">
         <div
-          className="relative aspect-video md:aspect-[19/9] w-[92vw] max-w-[1120px] rounded-2xl md:rounded-[2rem] overflow-hidden select-none bg-neutral-100 shadow-xl shadow-neutral-300/40"
+          className="relative aspect-video md:aspect-[19/9] w-[92vw] max-w-[1120px] rounded-2xl md:rounded-[2rem] overflow-hidden select-none bg-neutral-100 shadow-2xl shadow-neutral-900/15 ring-1 ring-neutral-900/5"
           style={{ touchAction: 'pan-y' }}
         >
           <div
@@ -301,6 +301,13 @@ export default function Hero() {
               />
             </div>
           )}
+
+          {/* Drag hint — fades away after a few seconds */}
+          <div className="scrub-hint absolute bottom-4 inset-x-0 flex items-center justify-center gap-3 text-white/60 text-xs tracking-[0.18em] uppercase">
+            <span>←</span>
+            <span>drag</span>
+            <span>→</span>
+          </div>
         </div>
       </div>
 
@@ -350,13 +357,13 @@ export default function Hero() {
         <h1 className="text-neutral-900 leading-[1.0]" key={mode}>
           <span
             className="anim reveal block font-playfair italic text-4xl sm:text-6xl md:text-7xl"
-            style={{ animationDelay: '0.4s' }}
+            style={{ animationDelay: '0.4s', textShadow: '0 2px 16px rgba(255,255,255,0.7)' }}
           >
             {hero.line1}
           </span>
           <span
             className="anim reveal block text-4xl sm:text-6xl md:text-7xl -mt-1"
-            style={{ animationDelay: '0.55s', letterSpacing: '-0.04em' }}
+            style={{ animationDelay: '0.55s', letterSpacing: '-0.04em', textShadow: '0 2px 16px rgba(255,255,255,0.7)' }}
           >
             {hero.line2}
           </span>
