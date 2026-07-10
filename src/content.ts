@@ -38,9 +38,9 @@ interface StatementPhrase {
 
 export const STATEMENT: Record<Mode, StatementPhrase[]> = {
   ai: [
-    { text: 'Mikhail architects AI agent systems ' },
-    { text: 'that turn manual, repetitive workflows ' },
-    { text: 'into automations that run themselves.', accent: true },
+    { text: 'Mikhail audits real workflows, proves the ROI, ' },
+    { text: 'then architects the AI agents and automations ' },
+    { text: 'that actually replace the manual work.', accent: true },
   ],
   bd: [
     { text: 'Mikhail builds partnerships and pipelines ' },
@@ -60,7 +60,7 @@ export const MANIFESTO: Record<Mode, ManifestoItem[]> = {
     {
       idx: '0.1',
       title: 'My Mission',
-      desc: 'Automate the repetitive, so people can focus on judgment.',
+      desc: 'Audit first, automate second — cut cost and routine, not corners.',
     },
     {
       idx: '0.2',
@@ -70,7 +70,7 @@ export const MANIFESTO: Record<Mode, ManifestoItem[]> = {
     {
       idx: '0.3',
       title: 'My Ambition',
-      desc: 'Ship AI systems that just work, without anyone noticing.',
+      desc: 'Build automation architecture that scales past the first integration.',
     },
   ],
   bd: [
@@ -111,19 +111,37 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       role: 'AI Automation Architect',
       period: 'Nov 2025 — Present',
       bullets: [
-        'Designed end-to-end AI automations across the agency with n8n, custom APIs, Yandex AI Studio, and Claude Code.',
-        'Architected RAG databases and deployed local + cloud LLMs for contextual accuracy.',
-        'Audited business processes before automating them to guarantee ROI and clean integration.',
+        'Audited agency workflows through cross-functional interviews, surfacing bottlenecks and modeling the ROI case before building anything.',
+        'Built end-to-end automations and integrations on n8n, custom APIs, and PostgreSQL; deployed and managed multiple LLMs, including local hosting, OpenClaw, Claude, and Hermes Agent.',
+        'Shipped two production RAG-backed AI assistants — an internal legal-FAQ assistant and a media-buying guide navigator — plus an automated Plan/Fact media analytics pipeline and a document-routing system feeding Google Drive and Bitrix24.',
+      ],
+    },
+    {
+      company: 'afp.ai',
+      role: 'AI Agent Architecture, International Division',
+      period: 'Jan 2024 — Present',
+      bullets: [
+        'Designed and shipped a fully autonomous multi-channel cold-outreach agent, automating the pipeline end to end from lead sourcing to deal close.',
+        'Built LLM-based lead scoring and routing that auto-classified companies by region and need, and hyper-personalized every LinkedIn/email message per lead — no templates.',
+        'Scaled cold-outreach throughput several times over with zero extra headcount.',
+      ],
+    },
+    {
+      company: 'Xenara Inc.',
+      role: 'AI Call Intelligence',
+      period: 'Jun 2025 — Nov 2025',
+      bullets: [
+        'Built automatic transcription and AI analysis of client calls, extracting intent and objections and writing structured notes straight into the CRM with no manual entry.',
+        'Stood up the sales-automation stack (CRM, Apollo.io, LinkedIn Sales Navigator) for an autonomous AI customer-service platform launching into the US and EU.',
       ],
     },
     {
       company: 'Air Agency',
-      role: 'Social Media Team Lead',
-      period: 'Aug 2017 — Oct 2019',
+      role: 'Marketing Automation Engineer',
+      period: 'Aug 2017 — Aug 2019',
       bullets: [
-        'Built tailored Python SMM bots and automation workflows for Instagram and Facebook campaigns.',
-        'Ran 30 Instagram accounts monthly, including the Strellson brand account.',
-        'Drove average target-audience growth of 49.54%.',
+        'Built a custom Python bot suite from scratch to run Instagram/Facebook campaigns: algorithmic audience targeting, auto-commenting on trigger hashtags, and a DM chatbot that qualified leads and escalated only complex queries.',
+        'Fully automated the SMM team’s lead-gen and moderation workload, driving 49.54% average audience growth across a 30-account portfolio.',
       ],
     },
   ],
@@ -187,19 +205,19 @@ export const CARDS: Record<Mode, Card[]> = {
       code: 'A¹',
       tag: '01 / AUT',
       name: 'Automation',
-      desc: 'End-to-end workflow automation across marketing and sales ops, built with n8n and custom APIs.',
+      desc: 'End-to-end workflow automation across marketing and sales ops, built with n8n, custom APIs, and PostgreSQL.',
     },
     {
       code: 'B¹',
       tag: '02 / RAG',
       name: 'RAG & LLMs',
-      desc: 'Retrieval-augmented pipelines and local + cloud LLM deployments for contextual accuracy.',
+      desc: 'Retrieval-augmented pipelines and local + cloud LLM deployments (Yandex AI Studio, OpenClaw) for contextual accuracy.',
     },
     {
       code: 'A¹',
       tag: '03 / AGT',
       name: 'Agent Orchestration',
-      desc: 'Multi-agent workflows built with Claude Code, Hermes Agent, and custom integrations.',
+      desc: 'Autonomous multi-agent workflows built with Claude Code, Hermes Agent, and custom integrations.',
     },
   ],
   bd: [
@@ -231,7 +249,7 @@ interface InfoPair {
 
 export const INFO: Record<Mode, InfoPair[]> = {
   ai: [
-    { label: 'Stack', value: 'n8n · Claude Code · RAG' },
+    { label: 'Stack', value: 'n8n · PostgreSQL · RAG' },
     { label: 'Core Business', value: 'Workflow Automation' },
     { label: 'Current Role', value: 'AI Automation Architect' },
     { label: 'Approach', value: 'Audit → Automate → Scale' },
