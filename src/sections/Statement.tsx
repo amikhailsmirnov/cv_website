@@ -2,16 +2,12 @@ import Reveal from '../components/Reveal';
 import { useMode } from '../lib/ModeContext';
 import { STATEMENT } from '../content';
 
-// SECTION A — Statement. OffWhite, tall, centered. Mixed-weight headline with
-// a Playfair-italic accent, revealed phrase-block by phrase-block.
 export default function Statement() {
   const { mode } = useMode();
   const phrases = STATEMENT[mode];
 
   return (
-    <section
-      className="w-full bg-[#f2f2f4] transition-colors duration-700 py-24 px-5 md:px-14"
-    >
+    <section className="w-full bg-[#f2f2f4] py-24 px-5 md:px-14">
       <div className="max-w-5xl mx-auto">
         <Reveal>
           <p className="text-neutral-400 text-sm tracking-[0.1em] uppercase mb-6">
@@ -20,7 +16,7 @@ export default function Statement() {
         </Reveal>
 
         <h2
-          className="text-4xl sm:text-6xl md:text-7xl leading-[1.05] tracking-[-0.03em] text-neutral-900"
+          className="text-4xl sm:text-5xl md:text-6xl leading-[1.08] tracking-[-0.025em] text-neutral-900"
           key={mode}
         >
           {phrases.map((phrase, i) => (

@@ -12,26 +12,16 @@
   font-family: 'Playfair Display', serif;
 }
 
-/* Hero bottom fade — the portrait dissolves into the white page. */
+/* Hero bottom fade — sits at z-20, below the card (z-30), so it only softens
+   the white space between the card and the page edge, never the video itself. */
 .hero-gradient {
-  height: 48%;
+  height: 36%;
   background: linear-gradient(
     to bottom,
     rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.3) 25%,
-    rgba(255, 255, 255, 0.65) 55%,
-    #ffffff 88%
+    rgba(255, 255, 255, 0.6) 55%,
+    #ffffff 100%
   );
-}
-
-/* Drag hint — auto-fades after a few seconds, no JS needed. */
-@keyframes hintFade {
-  0%, 60% { opacity: 1; }
-  100% { opacity: 0; }
-}
-.scrub-hint {
-  animation: hintFade 3.5s ease-out 1.2s both;
-  pointer-events: none;
 }
 
 /* Lenis smooth scroll */
@@ -49,50 +39,34 @@ html.lenis body {
   overflow: hidden;
 }
 
-/* Subtle "alive" pulse for accent elements (opacity-only). */
-@keyframes cardPulse {
-  0%,
-  100% {
-    opacity: 0.25;
-  }
-  50% {
-    opacity: 0.9;
-  }
-}
-.card-pulse {
-  animation: cardPulse 3s ease-in-out infinite;
-}
-
-/* Sibling-dim hover: hovering one row fades its siblings to 0.5. Targets
-   .dim-item (inner element), never the Framer reveal wrapper, so inline reveal
-   opacity and this CSS opacity don't collide. */
+/* Sibling-dim hover: hovering one row fades siblings to 0.5. Targets .dim-item
+   (the inner element), so Framer's inline reveal opacity doesn't collide. */
 .dim-item {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
 }
 .sib-dim:hover .dim-item {
-  opacity: 0.5;
+  opacity: 0.4;
 }
 .sib-dim .dim-item:hover {
-  opacity: 1;
+  opacity: 1 !important;
 }
 
+/* Hero entrance — clean slide-up fade, no blur so it feels sharp on load. */
 @keyframes heroReveal {
   0% {
     opacity: 0;
-    transform: translateY(24px);
-    filter: blur(10px);
+    transform: translateY(22px);
   }
   100% {
     opacity: 1;
     transform: translateY(0);
-    filter: blur(0);
   }
 }
 
 @keyframes heroFade {
   0% {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(12px);
   }
   100% {
     opacity: 1;
@@ -100,42 +74,36 @@ html.lenis body {
   }
 }
 
-/* Base "hidden until animated" marker. The animation classes below carry the
-   full shorthand (incl. fill-mode + timing) so the shorthand can't reset them. */
+/* Starts hidden; animation classes carry the fill-mode so the shorthand
+   can't reset them. */
 .anim {
   opacity: 0;
 }
 
-.reveal {
-  animation: heroReveal 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.anim.reveal {
+  animation: heroReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.fade {
-  animation: heroFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.anim.fade {
+  animation: heroFade 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes scrollBounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(4px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(5px); }
 }
 
 .scroll-bounce {
-  animation: scrollBounce 1.8s ease-in-out infinite;
+  animation: scrollBounce 2s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .anim {
     opacity: 1;
   }
-  .reveal,
-  .fade,
-  .scroll-bounce,
-  .card-pulse {
+  .anim.reveal,
+  .anim.fade,
+  .scroll-bounce {
     animation: none;
   }
 }
