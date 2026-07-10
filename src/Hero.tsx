@@ -12,75 +12,103 @@ const contactIcon = (href: string): LucideIcon => {
   return Send;
 };
 
-// One clip, never autoplayed — scrubbed by cursor/touch position like a
-// filmstrip. Cursor X across the window maps onto the timeline: far left =
-// first frame = Business Dev, far right = last frame = AI. The page opens
-// on the first frame.
-const HERO_VIDEO = '/hero.mp4';
+// Two clips, one per side. Neither ever autoplays — they're scrubbed by
+// cursor/touch position like a filmstrip. From the center of the screen,
+// dragging LEFT winds the Business Dev clip forward, dragging RIGHT winds
+// the AI clip forward; the two crossfade across the center. Locked into a
+// side zone, that clip freezes on its final frame so the matching CV can
+// be read in peace.
+const VIDEO_SRC: Record<Mode, string> = {
+  bd: '/hero-bd.mp4',
+  ai: '/hero-ai.mp4',
+};
 
 // Per-frame easing toward the cursor-mapped target position (0..1).
 const LERP = 0.1;
 
 // The outer band on each side is the "reveal zone": drag far enough into it
-// and the clip snaps to that end of the timeline and locks there — no more
-// tracking the cursor — so the matching CV freezes on screen to read. The
-// middle band is a live pass-through: the clip just winds with the cursor,
-// and nothing locks in yet. Unlock thresholds sit slightly inside the lock
-// thresholds so hovering right at the edge doesn't flicker.
+// and that side's clip snaps to its final frame and locks there — no more
+// tracking the cursor — so the matching CV freezes on screen to read. A
+// small dead zone straddles the center (BD_START..AI_START) where both
+// clips rest on their FIRST frame — that's also where the crossfade
+// happens — so the page opens on frame one, not mid-wind. Unlock thresholds
+// sit slightly inside the lock thresholds so hovering at the edge doesn't
+// flicker.
 const LOCK_BD = 0.3;
 const LOCK_AI = 0.7;
 const UNLOCK_BD = 0.38;
 const UNLOCK_AI = 0.62;
+const BD_START = 0.45;
+const AI_START = 0.55;
+
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
 const MODES: Mode[] = ['bd', 'ai'];
 
 export default function Hero() {
   const { mode, setMode } = useMode();
 
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const bdRef = useRef<HTMLVideoElement>(null);
+  const aiRef = useRef<HTMLVideoElement>(null);
   const [videoReady, setVideoReady] = useState(false);
-  // If the clip fails to load/decode, fall back to the static split so the
-  // hero never shows a broken frame.
+  // If either clip fails to load/decode, fall back to the static split so
+  // the hero never shows a broken frame.
   const [videoAvailable, setVideoAvailable] = useState(true);
   // Past the hero, the fixed nav gains a shadow so it reads over section text.
   const [scrolled, setScrolled] = useState(false);
-  const isSeeking = useRef(false);
+  const seekingBd = useRef(false);
+  const seekingAi = useRef(false);
 
   // Mutable scrub state — kept in refs so it survives re-renders without
   // triggering them. target: where the scrub should ease toward across the
-  // full window width (0 = far left = first frame = BD, 1 = far right =
-  // last frame = AI). smooth: the eased value that actually drives the
-  // seeks. locked: which side (if any) is pinned — while locked, cursor
-  // movement inside that same reveal zone is ignored so the freeze-frame
-  // holds still. The page opens on the FIRST frame, locked to BD.
-  const target = useRef(0);
-  const smooth = useRef(0);
-  const locked = useRef<Mode | null>('bd');
+  // full window width (0 = far left / BD fully wound, center = both clips
+  // on their first frame, 1 = far right / AI fully wound). smooth: the
+  // eased value that actually drives the seeks and the crossfade. locked:
+  // which side (if any) is pinned. The page opens on the AI clip's FIRST
+  // frame, unwound.
+  const target = useRef(AI_START);
+  const smooth = useRef(AI_START);
+  const locked = useRef<Mode | null>(null);
   const spotlightRef = useRef<HTMLDivElement>(null);
   const seamRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const video = videoRef.current;
+    const bd = bdRef.current;
+    const ai = aiRef.current;
 
     const onLoaded = () => setVideoReady(true);
     const onError = () => setVideoAvailable(false);
 
-    // The browser processes one seek at a time. When a seek finishes, if
-    // the smoothed target has moved on, chain another one so none drop.
-    const requestSeek = () => {
+    // How far each side's clip is wound, given the smoothed cursor position.
+    // Inside the center dead zone both sit at 0 (their first frame).
+    const bdProgress = () => clamp01((BD_START - smooth.current) / (BD_START - LOCK_BD));
+    const aiProgress = () => clamp01((smooth.current - AI_START) / (LOCK_AI - AI_START));
+
+    // The browser processes one seek per video at a time. When a seek
+    // finishes, if the smoothed target has moved on, chain another one so
+    // none are dropped.
+    const requestSeek = (
+      video: HTMLVideoElement | null,
+      progress: number,
+      seeking: { current: boolean },
+    ) => {
       if (!video || !video.duration) return;
       // Hold just shy of the very last frame — seeking to the exact end can
       // show black on some encoders.
-      const nextTime = smooth.current * Math.max(0, video.duration - 0.05);
-      if (isSeeking.current) return;
+      const nextTime = progress * Math.max(0, video.duration - 0.05);
+      if (seeking.current) return;
       if (Math.abs(nextTime - video.currentTime) < 0.01) return;
-      isSeeking.current = true;
+      seeking.current = true;
       video.currentTime = nextTime;
     };
 
-    const onSeeked = () => {
-      isSeeking.current = false;
-      requestSeek();
+    const onSeekedBd = () => {
+      seekingBd.current = false;
+      requestSeek(bd, bdProgress(), seekingBd);
+    };
+    const onSeekedAi = () => {
+      seekingAi.current = false;
+      requestSeek(ai, aiProgress(), seekingAi);
     };
 
     const setTargetFromX = (clientX: number) => {
@@ -134,10 +162,17 @@ export default function Hero() {
     const tick = () => {
       smooth.current += (target.current - smooth.current) * LERP;
 
-      if (video && video.duration) {
-        requestSeek();
+      const haveVideo = (bd && bd.duration) || (ai && ai.duration);
+      if (haveVideo) {
+        requestSeek(bd, bdProgress(), seekingBd);
+        requestSeek(ai, aiProgress(), seekingAi);
+        // Crossfade across the center dead zone: BD owns the left, AI the
+        // right, blending over the BD_START..AI_START band.
+        const aiOpacity = clamp01((smooth.current - BD_START) / (AI_START - BD_START));
+        if (bd) bd.style.opacity = String(1 - aiOpacity);
+        if (ai) ai.style.opacity = String(aiOpacity);
       } else {
-        // No clip yet — drive the fallback spotlight instead.
+        // No clips yet — drive the fallback spotlight instead.
         const pct = smooth.current * 100;
         if (spotlightRef.current) spotlightRef.current.style.left = `${pct}%`;
         if (seamRef.current) {
@@ -149,7 +184,11 @@ export default function Hero() {
     };
     rafId = requestAnimationFrame(tick);
 
-    if (video) {
+    for (const [video, onSeeked] of [
+      [bd, onSeekedBd],
+      [ai, onSeekedAi],
+    ] as const) {
+      if (!video) continue;
       video.pause();
       video.addEventListener('loadeddata', onLoaded);
       video.addEventListener('seeked', onSeeked);
@@ -166,7 +205,11 @@ export default function Hero() {
 
     return () => {
       cancelAnimationFrame(rafId);
-      if (video) {
+      for (const [video, onSeeked] of [
+        [bd, onSeekedBd],
+        [ai, onSeekedAi],
+      ] as const) {
+        if (!video) continue;
         video.removeEventListener('loadeddata', onLoaded);
         video.removeEventListener('seeked', onSeeked);
         video.removeEventListener('error', onError);
@@ -194,53 +237,71 @@ export default function Hero() {
       className="relative w-full overflow-hidden h-screen h-[100dvh] bg-white"
       style={{ height: '100dvh' }}
     >
-      {/* VIDEO — full-bleed across the whole hero, scrubbed by cursor/touch
-          like a filmstrip. Letting go leaves it frozen on the current frame;
-          locking into a side zone flips the whole site's mode. */}
-      <div
-        className="absolute inset-0 z-10 select-none"
-        style={{ touchAction: 'pan-y' }}
-      >
-        <video
-          ref={videoRef}
-          src={HERO_VIDEO}
-          muted
-          playsInline
-          preload="auto"
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
-            videoAvailable && videoReady ? 'opacity-100' : 'opacity-0'
-          }`}
-        />
-
-        {(!videoAvailable || !videoReady) && (
-          <div className="absolute inset-0 flex">
-            <div className="w-1/2 h-full flex items-center justify-center bg-gradient-to-br from-[#f1ece4] to-[#e4dcd2]">
-              <User className="w-12 h-12 md:w-16 md:h-16 text-neutral-500" strokeWidth={1} />
-            </div>
-            <div className="w-1/2 h-full flex items-center justify-center bg-gradient-to-bl from-[#e4e7ec] to-[#d4d7dc]">
-              <Bot className="w-12 h-12 md:w-16 md:h-16 text-neutral-500" strokeWidth={1} />
-            </div>
-
-            {/* seam — fixed center line, brightens as the spotlight nears it */}
-            <div
-              ref={seamRef}
-              className="absolute inset-y-0 left-1/2 w-px bg-white/80"
-              style={{ opacity: 0.15 }}
+      {/* VIDEO — two clips crossfaded in a contained wide card (a touch wider
+          than 16:9), scrubbed by cursor/touch like a filmstrip. Letting go
+          leaves the active clip frozen; locking into a side zone flips the
+          whole site's mode. The wrap padding reserves room for the headline
+          block below. */}
+      <div className="absolute inset-0 z-10 flex justify-center items-center pt-24 pb-72 md:pt-20 md:pb-32">
+        <div
+          className="relative aspect-video md:aspect-[19/9] w-[92vw] max-w-[1120px] rounded-2xl md:rounded-[2rem] overflow-hidden select-none bg-neutral-100 shadow-xl shadow-neutral-300/40"
+          style={{ touchAction: 'pan-y' }}
+        >
+          <div
+            className={`absolute inset-0 transition-opacity duration-700 ${
+              videoAvailable && videoReady ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <video
+              ref={bdRef}
+              src={VIDEO_SRC.bd}
+              muted
+              playsInline
+              preload="auto"
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ opacity: 0 }}
             />
-
-            {/* spotlight — eases toward the cursor-mapped position each frame */}
-            <div
-              ref={spotlightRef}
-              className="absolute inset-y-0 w-1/3 pointer-events-none"
-              style={{
-                left: `${(mode === 'ai' ? 1 : 0) * 100}%`,
-                transform: 'translateX(-50%)',
-                background:
-                  'radial-gradient(ellipse at center, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 70%)',
-              }}
+            <video
+              ref={aiRef}
+              src={VIDEO_SRC.ai}
+              muted
+              playsInline
+              preload="auto"
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ opacity: 1 }}
             />
           </div>
-        )}
+
+          {(!videoAvailable || !videoReady) && (
+            <div className="absolute inset-0 flex">
+              <div className="w-1/2 h-full flex items-center justify-center bg-gradient-to-br from-[#f1ece4] to-[#e4dcd2]">
+                <User className="w-12 h-12 md:w-16 md:h-16 text-neutral-500" strokeWidth={1} />
+              </div>
+              <div className="w-1/2 h-full flex items-center justify-center bg-gradient-to-bl from-[#e4e7ec] to-[#d4d7dc]">
+                <Bot className="w-12 h-12 md:w-16 md:h-16 text-neutral-500" strokeWidth={1} />
+              </div>
+
+              {/* seam — fixed center line, brightens as the spotlight nears it */}
+              <div
+                ref={seamRef}
+                className="absolute inset-y-0 left-1/2 w-px bg-white/80"
+                style={{ opacity: 0.15 }}
+              />
+
+              {/* spotlight — eases toward the cursor-mapped position each frame */}
+              <div
+                ref={spotlightRef}
+                className="absolute inset-y-0 w-1/3 pointer-events-none"
+                style={{
+                  left: `${(mode === 'ai' ? 1 : 0) * 100}%`,
+                  transform: 'translateX(-50%)',
+                  background:
+                    'radial-gradient(ellipse at center, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 70%)',
+                }}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* BOTTOM FADE — the portrait dissolves into pure white, no hard edge. */}
