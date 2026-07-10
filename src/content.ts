@@ -126,7 +126,7 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       role: 'Head of Business Development',
       period: 'Jan 2024 - Present',
       location: 'Dubai, UAE',
-      note: 'Same job as on the other side of this site. The title says business development; this is what I built to run it.',
+      note: 'Same job as in the BD resume. I just refused to do the outreach by hand.',
       bullets: [
         'Designed and shipped a fully autonomous multi-channel cold outreach agent that runs the whole pipeline, from finding a lead to closing the deal.',
         'Built LLM lead scoring and routing that sorts companies by region and need, and writes a personal LinkedIn or email message for every single lead. No templates.',
