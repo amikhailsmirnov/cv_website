@@ -149,7 +149,7 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       role: 'Social Media Team Lead',
       period: 'Aug 2017 - Aug 2019',
       location: 'Marbella, Spain',
-      note: 'The job was running social media. I automated most of it with Python.',
+      note: 'Hired to run social media. Wrote Python that ran it for me.',
       bullets: [
         'Wrote a custom Python bot suite from scratch to run Instagram and Facebook campaigns: audience targeting, auto-commenting on trigger hashtags, and a DM chatbot that qualified leads and only passed the tricky cases to a human.',
         'Grew audiences 376% and engagement 212% across 30 accounts in six months, holding 49.54% average growth overall.',
