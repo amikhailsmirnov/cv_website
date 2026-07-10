@@ -1,6 +1,7 @@
 import Hero from './Hero';
 import Statement from './sections/Statement';
 import Manifesto from './sections/Manifesto';
+import Experience from './sections/Experience';
 import Products from './sections/Products';
 import Info from './sections/Info';
 import Footer from './sections/Footer';
@@ -16,6 +17,7 @@ export default function App() {
         <Hero />
         <Statement />
         <Manifesto />
+        <Experience />
         <Products />
         <Info />
         <Footer />

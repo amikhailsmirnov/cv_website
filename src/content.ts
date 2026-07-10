@@ -92,6 +92,83 @@ export const MANIFESTO: Record<Mode, ManifestoItem[]> = {
   ],
 };
 
+interface ExperienceItem {
+  company: string;
+  role: string;
+  period: string;
+  bullets: string[];
+}
+
+export const EXPERIENCE_TITLE: Record<Mode, string> = {
+  ai: 'Shipped in the field.',
+  bd: 'Closed in the field.',
+};
+
+export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
+  ai: [
+    {
+      company: 'Go Mobile',
+      role: 'AI Automation Architect',
+      period: 'Nov 2025 — Present',
+      bullets: [
+        'Designed end-to-end AI automations across the agency with n8n, custom APIs, Yandex AI Studio, and Claude Code.',
+        'Architected RAG databases and deployed local + cloud LLMs for contextual accuracy.',
+        'Audited business processes before automating them to guarantee ROI and clean integration.',
+      ],
+    },
+    {
+      company: 'Air Agency',
+      role: 'Social Media Team Lead',
+      period: 'Aug 2017 — Oct 2019',
+      bullets: [
+        'Built tailored Python SMM bots and automation workflows for Instagram and Facebook campaigns.',
+        'Ran 30 Instagram accounts monthly, including the Strellson brand account.',
+        'Drove average target-audience growth of 49.54%.',
+      ],
+    },
+  ],
+  bd: [
+    {
+      company: 'afp.ai',
+      role: 'Partnerships Manager → Head of Business Development',
+      period: 'Apr 2023 — Present',
+      bullets: [
+        'Lead a team of 5 across LatAm, MENA, Africa, EMEA, and APAC outreach.',
+        'Bilingual (EN/ES) consultations, contracts, and closing across luxury, banking, pharma, and iGaming clients.',
+        'Own team OKRs/KPIs and CRM strategy end to end.',
+      ],
+    },
+    {
+      company: 'Xenara Inc.',
+      role: 'Head of Sales',
+      period: 'Jun 2025 — Nov 2025',
+      bullets: [
+        'Built US/EU e-commerce sales infrastructure from scratch for an autonomous AI customer-service platform.',
+        'Launched multi-channel lead gen with Apollo.io and LinkedIn Sales Navigator.',
+        'Ran full-cycle sales: demos, closes, competitive positioning.',
+      ],
+    },
+    {
+      company: 'Keywords Studios',
+      role: 'Customer Experience Manager',
+      period: 'Oct 2021 — Apr 2023',
+      bullets: [
+        'Managed a team of 10 supporting a title with 140M+ downloads worldwide.',
+        'Ranked top 3 employee of the month every month for a year straight.',
+      ],
+    },
+    {
+      company: 'PartyTeam',
+      role: 'Events Lead',
+      period: 'Oct 2015 — Nov 2019',
+      bullets: [
+        'Planned and ran events for up to 35,000 attendees, 200+ events total.',
+        'Attracted 25 new regular clients every year; managed VIP relationships.',
+      ],
+    },
+  ],
+};
+
 interface Card {
   code: string;
   tag: string;
