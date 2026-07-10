@@ -17,20 +17,15 @@ const VIDEO_SRC: Record<Mode, string> = {
   ai: '/hero-ai.mp4',
 };
 
-const LERP = 0.09;
-
-// Outer reveal zones: drag into them → clip locks on its final frame, mode flips.
-// Unlock thresholds are wider so edge-hovering doesn't flicker.
-const LOCK_BD   = 0.3;
-const LOCK_AI   = 0.7;
+const LERP    = 0.09;
+const LOCK_BD = 0.3;
+const LOCK_AI = 0.7;
 const UNLOCK_BD = 0.38;
 const UNLOCK_AI = 0.62;
-// Center dead zone: both clips rest on frame 0, crossfade happens here.
 const BD_START  = 0.45;
 const AI_START  = 0.55;
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
-
 const MODES: Mode[] = ['bd', 'ai'];
 
 export default function Hero() {
@@ -44,9 +39,6 @@ export default function Hero() {
   const seekingBd = useRef(false);
   const seekingAi = useRef(false);
 
-  // Scrub state in refs so updates never trigger re-renders.
-  // smooth eases toward target each frame; locked pins the active side.
-  // Page opens with smooth = AI_START so AI clip shows its first frame.
   const target = useRef(AI_START);
   const smooth = useRef(AI_START);
   const locked = useRef<Mode | null>(null);
@@ -80,8 +72,6 @@ export default function Hero() {
     const onSeekedAi = () => { seekingAi.current = false; requestSeek(ai, aiProgress(), seekingAi); };
 
     const setTargetFromX = (clientX: number) => {
-      // Scrubbing only tracks cursor while the hero is on screen — not while
-      // reading the CV sections below (mode toggle handles that instead).
       if (window.scrollY > window.innerHeight * 0.25) return;
 
       const nx = clamp01(clientX / window.innerWidth);
@@ -172,11 +162,12 @@ export default function Hero() {
       className="relative w-full overflow-hidden h-[100dvh] bg-white"
       style={{ height: '100dvh' }}
     >
-      {/* Card sits at z-30, above the gradient (z-20), so the gradient only
-          softens the white space below the card — never fogs the video. */}
-      <div className="absolute inset-0 z-30 flex justify-center items-center pt-24 pb-72 md:pt-20 md:pb-32">
+      {/* Card at z-30 — above the gradient (z-20) so the gradient never fogs the video. */}
+      <div className="absolute inset-0 z-30 flex justify-center items-center pt-24 pb-64 md:pt-20 md:pb-32">
+        {/* Mobile uses 3:2 (taller card, more video visible); desktop uses 19:9 (cinematic wide). */}
         <div
-          className="relative aspect-video md:aspect-[19/9] w-[92vw] max-w-[1120px] rounded-2xl md:rounded-[2rem] overflow-hidden select-none bg-neutral-100 shadow-2xl shadow-neutral-900/12 ring-1 ring-neutral-900/5 cursor-col-resize"
+          data-cursor="scrub"
+          className="relative aspect-[3/2] md:aspect-[19/9] w-[92vw] max-w-[1120px] rounded-2xl md:rounded-[2rem] overflow-hidden select-none bg-neutral-100 shadow-2xl shadow-neutral-900/12 ring-1 ring-neutral-900/5"
           style={{ touchAction: 'pan-y' }}
         >
           <div
@@ -187,18 +178,14 @@ export default function Hero() {
             <video
               ref={bdRef}
               src={VIDEO_SRC.bd}
-              muted
-              playsInline
-              preload="auto"
+              muted playsInline preload="auto"
               className="absolute inset-0 w-full h-full object-cover"
               style={{ opacity: 0 }}
             />
             <video
               ref={aiRef}
               src={VIDEO_SRC.ai}
-              muted
-              playsInline
-              preload="auto"
+              muted playsInline preload="auto"
               className="absolute inset-0 w-full h-full object-cover"
               style={{ opacity: 1 }}
             />
@@ -231,16 +218,17 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Gradient at z-20 — below the card (z-30), so it only affects the white
-          background area beneath the card. Smooths the hero → first section join. */}
+      {/* Gradient: z-20, below card (z-30). Softens white space at hero bottom. */}
       <div className="hero-gradient absolute inset-x-0 bottom-0 z-20 pointer-events-none" />
 
-      {/* Fixed nav — the core mode toggle, stays reachable while reading CV. */}
+      {/* Nav: frosted glass when scrolled, solid pill when at top. */}
       <nav className="fixed top-5 left-1/2 -translate-x-1/2 z-50">
         <div className="anim fade" style={{ animationDelay: '0.2s' }}>
           <div
-            className={`flex rounded-full p-1 items-center gap-1 bg-neutral-100 transition-all duration-300 ${
-              scrolled ? 'shadow-lg shadow-neutral-900/10' : 'shadow-none'
+            className={`flex rounded-full p-1 items-center gap-1 transition-all duration-300 ${
+              scrolled
+                ? 'bg-white/75 backdrop-blur-md shadow-sm shadow-neutral-900/8 ring-1 ring-neutral-900/8'
+                : 'bg-neutral-100'
             }`}
           >
             {MODES.map((m) => (
@@ -251,7 +239,7 @@ export default function Hero() {
                 className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm whitespace-nowrap transition-all duration-200 ${
                   mode === m
                     ? 'bg-white text-neutral-900 shadow-sm'
-                    : 'text-neutral-500 hover:text-neutral-800'
+                    : 'text-neutral-400 hover:text-neutral-700'
                 }`}
               >
                 {MODE_LABEL[m]}
@@ -261,7 +249,7 @@ export default function Hero() {
         </div>
       </nav>
 
-      {/* Bottom-left: name, headline, tags, contacts — visible on open. */}
+      {/* Bottom-left: name · location, headline, tag pills, contacts. */}
       <div className="absolute bottom-12 md:bottom-14 left-5 md:left-14 right-5 z-50">
         <p className="text-sm text-neutral-700 mb-2">
           <span className="font-medium">Mikhail Smirnov</span>
@@ -319,7 +307,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Scroll cue — bottom-right, never overlaps the bottom-left block. */}
+      {/* Scroll cue — bottom-right. */}
       <div className="absolute bottom-10 right-10 md:right-14 z-50">
         <button
           aria-label="Scroll to content"

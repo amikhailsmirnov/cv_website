@@ -1,6 +1,14 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import Reveal from '../components/Reveal';
 import { useMode } from '../lib/ModeContext';
 import { MANIFESTO } from '../content';
+
+const fade = {
+  initial: { opacity: 0, y: 6 },
+  animate: { opacity: 1, y: 0 },
+  exit:    { opacity: 0, y: -4 },
+  transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
+};
 
 export default function Manifesto() {
   const { mode } = useMode();
@@ -15,21 +23,23 @@ export default function Manifesto() {
           </p>
         </Reveal>
 
-        <div className="sib-dim" key={mode}>
-          {items.map((item, i) => (
-            <Reveal key={item.idx} delay={i * 0.1}>
-              <div className="dim-item grid md:grid-cols-[80px_1fr] gap-6 py-7 border-t border-neutral-100">
-                <div className="text-neutral-300 text-sm pt-1">{item.idx}</div>
-                <div>
-                  <h3 className="font-playfair italic text-2xl sm:text-3xl text-neutral-900">
-                    {item.title}
-                  </h3>
-                  <p className="text-neutral-500 text-base mt-2 leading-relaxed">{item.desc}</p>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div key={mode} className="sib-dim" {...fade}>
+            {items.map((item, i) => (
+              <Reveal key={item.idx} delay={i * 0.1}>
+                <div className="dim-item grid md:grid-cols-[80px_1fr] gap-6 py-7 border-t border-neutral-100">
+                  <div className="text-neutral-300 text-sm pt-1">{item.idx}</div>
+                  <div>
+                    <h3 className="font-playfair italic text-2xl sm:text-3xl text-neutral-900">
+                      {item.title}
+                    </h3>
+                    <p className="text-neutral-500 text-base mt-2 leading-relaxed">{item.desc}</p>
+                  </div>
                 </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
+              </Reveal>
+            ))}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </section>
   );
