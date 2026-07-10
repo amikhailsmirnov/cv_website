@@ -96,6 +96,13 @@ html.lenis body {
   animation: scrollBounce 2s ease-in-out infinite;
 }
 
+/* Visible focus for keyboard users — the OS cursor is hidden on mouse devices,
+   so this is the only affordance a keyboard navigator gets. */
+:focus-visible {
+  outline: 2px solid rgba(23, 23, 23, 0.55);
+  outline-offset: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .anim { opacity: 1; }
   .anim.reveal, .anim.fade, .scroll-bounce { animation: none; }

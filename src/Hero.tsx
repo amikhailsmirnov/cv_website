@@ -340,7 +340,7 @@ export default function Hero() {
         </div>
 
         <div
-          className="anim fade mt-3 flex items-center gap-x-4 gap-y-1.5 text-xs flex-wrap pr-12 md:pr-0"
+          className="anim fade mt-3 flex items-center justify-center gap-x-4 gap-y-1.5 text-xs flex-wrap"
           style={{ animationDelay: '0.9s' }}
         >
           {CONTACTS.map((c) => {
@@ -361,7 +361,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="absolute bottom-10 right-10 md:right-14 z-50">
+      <div className="hidden sm:block absolute bottom-10 right-10 md:right-14 z-50">
         <button
           aria-label="Scroll to content"
           onClick={scrollToContent}
