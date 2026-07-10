@@ -17,8 +17,8 @@ const VIDEO_SRC: Record<Mode, string> = {
   ai: '/hero-ai.mp4',
 };
 
-// Slightly higher than before — drag feels more responsive at 0.18.
-const LERP     = 0.18;
+// 0.22 keeps the seam feeling live without over-shooting on fast sweeps.
+const LERP     = 0.22;
 const LOCK_BD  = 0.3;
 const LOCK_AI  = 0.7;
 const UNLOCK_BD = 0.38;
@@ -40,7 +40,6 @@ export default function Hero() {
   const [scrolled, setScrolled]           = useState(false);
   const seekingBd = useRef(false);
   const seekingAi = useRef(false);
-  const isDragging = useRef(false);
 
   const target = useRef(AI_START);
   const smooth = useRef(AI_START);
@@ -93,27 +92,12 @@ export default function Hero() {
       }
     };
 
-    // Click-and-drag: pointer is captured on mousedown so moves fire even
-    // outside the card. On release, freeze the scrub at its current position
-    // (unless it's locked to a side, in which case let it ease to the end).
-    const onPointerDown = (e: PointerEvent) => {
-      isDragging.current = true;
-      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-      setTargetFromX(e.clientX);
-    };
+    // Passive mouse-follow: seam tracks cursor position whenever the pointer
+    // is anywhere over the card — no click required.
+    const onPointerMove = (e: PointerEvent) => setTargetFromX(e.clientX);
 
-    const onPointerMove = (e: PointerEvent) => {
-      if (!isDragging.current) return;
-      setTargetFromX(e.clientX);
-    };
-
-    const onPointerUp = () => {
-      isDragging.current = false;
-      if (!locked.current) target.current = smooth.current;
-    };
-
-    const onPointerCancel = () => {
-      isDragging.current = false;
+    // When the pointer leaves, ease back to whichever side is locked (or hold).
+    const onPointerLeave = () => {
       if (!locked.current) target.current = smooth.current;
     };
 
@@ -149,10 +133,8 @@ export default function Hero() {
       if (video.error) onError();
     }
 
-    card?.addEventListener('pointerdown', onPointerDown);
     card?.addEventListener('pointermove', onPointerMove);
-    card?.addEventListener('pointerup', onPointerUp);
-    card?.addEventListener('pointercancel', onPointerCancel);
+    card?.addEventListener('pointerleave', onPointerLeave);
 
     const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.5);
     onScroll();
@@ -166,10 +148,8 @@ export default function Hero() {
         video.removeEventListener('seeked', onSeeked);
         video.removeEventListener('error', onError);
       }
-      card?.removeEventListener('pointerdown', onPointerDown);
       card?.removeEventListener('pointermove', onPointerMove);
-      card?.removeEventListener('pointerup', onPointerUp);
-      card?.removeEventListener('pointercancel', onPointerCancel);
+      card?.removeEventListener('pointerleave', onPointerLeave);
       window.removeEventListener('scroll', onScroll);
     };
   }, [setMode]);
