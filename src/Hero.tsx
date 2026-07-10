@@ -165,10 +165,7 @@ export default function Hero() {
   const hero = HERO[mode];
 
   return (
-    <section
-      className="relative w-full overflow-hidden h-[100dvh] bg-white"
-      style={{ height: '100dvh' }}
-    >
+    <section className="relative w-full overflow-hidden h-[100dvh] bg-white">
       <div className="absolute inset-0 z-30 flex justify-center items-center pt-24 pb-64 md:pt-20 md:pb-32">
         <div
           ref={cardRef}

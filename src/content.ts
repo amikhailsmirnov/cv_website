@@ -12,7 +12,6 @@ export const MODE_LABEL: Record<Mode, string> = {
 interface HeroContent {
   line1: string;
   line2: string;
-  subPill: string;
   tags: string[];
 }
 
@@ -20,13 +19,11 @@ export const HERO: Record<Mode, HeroContent> = {
   ai: {
     line1: 'Where logic',
     line2: 'meets autonomy.',
-    subPill: 'Discover the automation side',
     tags: ['n8n', 'RAG', 'Claude Code'],
   },
   bd: {
     line1: 'Where deals',
     line2: 'meet momentum.',
-    subPill: 'Discover the partnerships side',
     tags: ['LatAm', 'GCC', 'EMEA'],
   },
 };
