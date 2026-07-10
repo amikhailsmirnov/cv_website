@@ -17,9 +17,10 @@ const VIDEO_SRC: Record<Mode, string> = {
   ai: '/hero-ai.mp4',
 };
 
-const LERP    = 0.09;
-const LOCK_BD = 0.3;
-const LOCK_AI = 0.7;
+// Slightly higher than before — drag feels more responsive at 0.18.
+const LERP     = 0.18;
+const LOCK_BD  = 0.3;
+const LOCK_AI  = 0.7;
 const UNLOCK_BD = 0.38;
 const UNLOCK_AI = 0.62;
 const BD_START  = 0.45;
@@ -31,23 +32,26 @@ const MODES: Mode[] = ['bd', 'ai'];
 export default function Hero() {
   const { mode, setMode } = useMode();
 
-  const bdRef = useRef<HTMLVideoElement>(null);
-  const aiRef = useRef<HTMLVideoElement>(null);
-  const [videoReady, setVideoReady] = useState(false);
+  const bdRef  = useRef<HTMLVideoElement>(null);
+  const aiRef  = useRef<HTMLVideoElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [videoReady, setVideoReady]       = useState(false);
   const [videoAvailable, setVideoAvailable] = useState(true);
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled]           = useState(false);
   const seekingBd = useRef(false);
   const seekingAi = useRef(false);
+  const isDragging = useRef(false);
 
   const target = useRef(AI_START);
   const smooth = useRef(AI_START);
   const locked = useRef<Mode | null>(null);
   const spotlightRef = useRef<HTMLDivElement>(null);
-  const seamRef = useRef<HTMLDivElement>(null);
+  const seamRef      = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const bd = bdRef.current;
-    const ai = aiRef.current;
+    const bd   = bdRef.current;
+    const ai   = aiRef.current;
+    const card = cardRef.current;
 
     const onLoaded = () => setVideoReady(true);
     const onError  = () => setVideoAvailable(false);
@@ -72,8 +76,6 @@ export default function Hero() {
     const onSeekedAi = () => { seekingAi.current = false; requestSeek(ai, aiProgress(), seekingAi); };
 
     const setTargetFromX = (clientX: number) => {
-      if (window.scrollY > window.innerHeight * 0.25) return;
-
       const nx = clamp01(clientX / window.innerWidth);
 
       if (locked.current === 'bd') {
@@ -91,8 +93,29 @@ export default function Hero() {
       }
     };
 
-    const onPointerMove = (e: PointerEvent) => setTargetFromX(e.clientX);
-    const onTouchMove   = (e: TouchEvent)   => setTargetFromX(e.touches[0].clientX);
+    // Click-and-drag: pointer is captured on mousedown so moves fire even
+    // outside the card. On release, freeze the scrub at its current position
+    // (unless it's locked to a side, in which case let it ease to the end).
+    const onPointerDown = (e: PointerEvent) => {
+      isDragging.current = true;
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      setTargetFromX(e.clientX);
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (!isDragging.current) return;
+      setTargetFromX(e.clientX);
+    };
+
+    const onPointerUp = () => {
+      isDragging.current = false;
+      if (!locked.current) target.current = smooth.current;
+    };
+
+    const onPointerCancel = () => {
+      isDragging.current = false;
+      if (!locked.current) target.current = smooth.current;
+    };
 
     let rafId = 0;
     const tick = () => {
@@ -126,11 +149,13 @@ export default function Hero() {
       if (video.error) onError();
     }
 
+    card?.addEventListener('pointerdown', onPointerDown);
+    card?.addEventListener('pointermove', onPointerMove);
+    card?.addEventListener('pointerup', onPointerUp);
+    card?.addEventListener('pointercancel', onPointerCancel);
+
     const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.5);
     onScroll();
-
-    window.addEventListener('pointermove', onPointerMove);
-    window.addEventListener('touchmove', onTouchMove, { passive: true });
     window.addEventListener('scroll', onScroll, { passive: true });
 
     return () => {
@@ -141,8 +166,10 @@ export default function Hero() {
         video.removeEventListener('seeked', onSeeked);
         video.removeEventListener('error', onError);
       }
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('touchmove', onTouchMove);
+      card?.removeEventListener('pointerdown', onPointerDown);
+      card?.removeEventListener('pointermove', onPointerMove);
+      card?.removeEventListener('pointerup', onPointerUp);
+      card?.removeEventListener('pointercancel', onPointerCancel);
       window.removeEventListener('scroll', onScroll);
     };
   }, [setMode]);
@@ -162,10 +189,9 @@ export default function Hero() {
       className="relative w-full overflow-hidden h-[100dvh] bg-white"
       style={{ height: '100dvh' }}
     >
-      {/* Card at z-30 — above the gradient (z-20) so the gradient never fogs the video. */}
       <div className="absolute inset-0 z-30 flex justify-center items-center pt-24 pb-64 md:pt-20 md:pb-32">
-        {/* Mobile uses 3:2 (taller card, more video visible); desktop uses 19:9 (cinematic wide). */}
         <div
+          ref={cardRef}
           data-cursor="scrub"
           className="relative aspect-[3/2] md:aspect-[19/9] w-[92vw] max-w-[1120px] rounded-2xl md:rounded-[2rem] overflow-hidden select-none bg-neutral-100 shadow-2xl shadow-neutral-900/12 ring-1 ring-neutral-900/5"
           style={{ touchAction: 'pan-y' }}
@@ -175,18 +201,20 @@ export default function Hero() {
               videoAvailable && videoReady ? 'opacity-100' : 'opacity-0'
             }`}
           >
+            {/* object-top crops the bottom of the frame where EZRemove left
+                a white/faded edge, keeping the face front and centre. */}
             <video
               ref={bdRef}
               src={VIDEO_SRC.bd}
               muted playsInline preload="auto"
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover object-top"
               style={{ opacity: 0 }}
             />
             <video
               ref={aiRef}
               src={VIDEO_SRC.ai}
               muted playsInline preload="auto"
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover object-top"
               style={{ opacity: 1 }}
             />
           </div>
@@ -218,10 +246,10 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Gradient: z-20, below card (z-30). Softens white space at hero bottom. */}
+      {/* Gradient height kept to 15% so it stays well below the card bottom
+          and only softens the seam between hero and next section. */}
       <div className="hero-gradient absolute inset-x-0 bottom-0 z-20 pointer-events-none" />
 
-      {/* Nav: frosted glass when scrolled, solid pill when at top. */}
       <nav className="fixed top-5 left-1/2 -translate-x-1/2 z-50">
         <div className="anim fade" style={{ animationDelay: '0.2s' }}>
           <div
@@ -249,7 +277,6 @@ export default function Hero() {
         </div>
       </nav>
 
-      {/* Bottom-left: name · location, headline, tag pills, contacts. */}
       <div className="absolute bottom-12 md:bottom-14 left-5 md:left-14 right-5 z-50">
         <p className="text-sm text-neutral-700 mb-2">
           <span className="font-medium">Mikhail Smirnov</span>
@@ -276,10 +303,7 @@ export default function Hero() {
           style={{ animationDelay: '0.75s' }}
         >
           {hero.tags.map((tag) => (
-            <span
-              key={tag}
-              className="px-3 py-1 rounded-full border border-neutral-200 text-neutral-500 text-xs"
-            >
+            <span key={tag} className="px-3 py-1 rounded-full border border-neutral-200 text-neutral-500 text-xs">
               {tag}
             </span>
           ))}
@@ -307,7 +331,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Scroll cue — bottom-right. */}
       <div className="absolute bottom-10 right-10 md:right-14 z-50">
         <button
           aria-label="Scroll to content"
