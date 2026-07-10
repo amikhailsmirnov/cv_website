@@ -1,5 +1,6 @@
 const LINKS = [
   { label: 'Email', href: 'mailto:amikhailsmirnov@gmail.com' },
+  { label: '+995 59 100 4603', href: 'tel:+995591004603' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/amikhailsmirnov' },
   { label: 'Telegram', href: 'https://t.me/amikhailsmirnov' },
 ];
