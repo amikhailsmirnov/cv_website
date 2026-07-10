@@ -152,8 +152,9 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       period: 'Apr 2023 — Present',
       bullets: [
         'Lead a team of 5 across LatAm, MENA, Africa, EMEA, and APAC outreach.',
+        'Ran 10 ad campaigns solo end to end — media planning, BrandLift research, KPI tracking, and reporting — before moving into the leadership role.',
         'Bilingual (EN/ES) consultations, contracts, and closing across luxury, banking, pharma, and iGaming clients.',
-        'Own team OKRs/KPIs and CRM strategy end to end.',
+        'Named Employee of the Year, 2024.',
       ],
     },
     {
