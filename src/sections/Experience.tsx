@@ -9,16 +9,16 @@ export default function Experience() {
   const items = EXPERIENCE[mode];
 
   return (
-    <section className="w-full bg-[#f2f2f4] transition-colors duration-700 py-32 px-5 md:px-14">
+    <section className="w-full bg-[#f2f2f4] transition-colors duration-700 py-20 px-5 md:px-14">
       <div className="max-w-5xl mx-auto">
         <Reveal>
-          <p className="text-neutral-400 text-sm tracking-[0.1em] uppercase mb-6">
+          <p className="text-neutral-400 text-sm tracking-[0.1em] uppercase mb-4">
             Experience
           </p>
         </Reveal>
         <Reveal delay={0.05}>
           <h2
-            className="font-playfair italic text-3xl sm:text-5xl text-neutral-900 tracking-[-0.02em] mb-10"
+            className="font-playfair italic text-3xl sm:text-5xl text-neutral-900 tracking-[-0.02em] mb-8"
             key={mode}
           >
             {EXPERIENCE_TITLE[mode]}
@@ -28,7 +28,7 @@ export default function Experience() {
         <div className="sib-dim" key={mode}>
           {items.map((item, i) => (
             <Reveal key={item.company} delay={i * 0.1}>
-              <div className="dim-item grid md:grid-cols-[180px_1fr] gap-4 md:gap-6 py-8 border-t border-neutral-200">
+              <div className="dim-item grid md:grid-cols-[180px_1fr] gap-4 md:gap-6 py-6 border-t border-neutral-200">
                 <div>
                   <div className="text-neutral-400 text-sm">{item.period}</div>
                   <div className="text-neutral-300 text-xs mt-1">{item.location}</div>
@@ -36,12 +36,12 @@ export default function Experience() {
                 <div>
                   <h3 className="text-xl text-neutral-900">
                     {item.company}
-                    <span className="text-neutral-400"> — {item.role}</span>
+                    <span className="text-neutral-400"> · {item.role}</span>
                   </h3>
                   <ul className="mt-3 space-y-1.5">
                     {item.bullets.map((bullet) => (
                       <li key={bullet} className="text-neutral-500 text-sm leading-snug pl-4 relative">
-                        <span className="absolute left-0 text-neutral-300">—</span>
+                        <span className="absolute left-0 text-neutral-300">•</span>
                         {bullet}
                       </li>
                     ))}

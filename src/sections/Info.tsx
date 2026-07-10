@@ -9,7 +9,7 @@ export default function Info() {
 
   return (
     <section className="w-full bg-[#0f1012] text-[#f2f2f4] transition-colors duration-700 px-5 md:px-14">
-      <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-y-12 gap-x-8 py-32" key={mode}>
+      <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-8 py-20" key={mode}>
         {pairs.map((pair, i) => (
           <Reveal key={pair.label} delay={i * 0.1}>
             <div>

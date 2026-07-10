@@ -3,7 +3,6 @@ import Statement from './sections/Statement';
 import Manifesto from './sections/Manifesto';
 import Experience from './sections/Experience';
 import Education from './sections/Education';
-import Products from './sections/Products';
 import Info from './sections/Info';
 import Footer from './sections/Footer';
 import { useLenis } from './lib/useLenis';
@@ -20,7 +19,6 @@ export default function App() {
         <Manifesto />
         <Experience />
         <Education />
-        <Products />
         <Info />
         <Footer />
       </div>

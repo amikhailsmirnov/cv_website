@@ -10,11 +10,11 @@ export default function Statement() {
 
   return (
     <section
-      className="w-full bg-[#f2f2f4] transition-colors duration-700 py-40 px-5 md:px-14"
+      className="w-full bg-[#f2f2f4] transition-colors duration-700 py-24 px-5 md:px-14"
     >
       <div className="max-w-5xl mx-auto">
         <Reveal>
-          <p className="text-neutral-400 text-sm tracking-[0.1em] uppercase mb-8">
+          <p className="text-neutral-400 text-sm tracking-[0.1em] uppercase mb-6">
             Overview
           </p>
         </Reveal>

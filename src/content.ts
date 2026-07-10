@@ -5,8 +5,8 @@ import type { Mode } from './lib/ModeContext';
 // Studios, PartyTeam, Air Agency).
 
 export const MODE_LABEL: Record<Mode, string> = {
-  ai: 'AI Agents',
-  bd: 'Business Dev',
+  ai: 'AI Automation Architect',
+  bd: 'Head of Business Development',
 };
 
 interface HeroContent {
@@ -38,14 +38,14 @@ interface StatementPhrase {
 
 export const STATEMENT: Record<Mode, StatementPhrase[]> = {
   ai: [
-    { text: 'Mikhail audits real workflows, proves the ROI, ' },
-    { text: 'then architects the AI agents and automations ' },
-    { text: 'that actually replace the manual work.', accent: true },
+    { text: 'I audit real workflows, prove the ROI, ' },
+    { text: 'then build the AI agents and automations ' },
+    { text: 'that take the manual work off the table.', accent: true },
   ],
   bd: [
-    { text: 'Mikhail builds partnerships and pipelines ' },
+    { text: 'I build partnerships and pipelines ' },
     { text: 'that turn the hardest markets ' },
-    { text: 'into recurring, compounding revenue.', accent: true },
+    { text: 'into revenue that keeps compounding.', accent: true },
   ],
 };
 
@@ -60,7 +60,7 @@ export const MANIFESTO: Record<Mode, ManifestoItem[]> = {
     {
       idx: '0.1',
       title: 'My Mission',
-      desc: 'Audit first, automate second — cut cost and routine, not corners.',
+      desc: 'Audit first, automate second. Cut cost and routine, not corners.',
     },
     {
       idx: '0.2',
@@ -110,44 +110,44 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
     {
       company: 'Go Mobile',
       role: 'AI Automation Architect',
-      period: 'Nov 2025 — May 2026',
+      period: 'Nov 2025 - May 2026',
       location: 'Jakarta, Indonesia',
       bullets: [
-        'Surveyed 9 teams, surfaced 97 real process problems, and shipped 7 AI automations from scratch — cutting ~35 hours of manual work and 30% of operational overhead every week.',
-        'Modeled the ROI case up front — 10+ automation opportunities pencilling out to $67K in projected annual savings — before building anything.',
-        'Built end-to-end automations on n8n, custom APIs, and PostgreSQL; deployed local + cloud LLMs (OpenClaw, Claude, Hermes Agent) with RAG databases underneath for accuracy — 39% gain in process efficiency, 20% faster system integration.',
-        'Shipped two production RAG-backed AI assistants — an internal legal-FAQ assistant and a media-buying guide navigator — plus an automated Plan/Fact analytics pipeline and a document router feeding Google Drive and Bitrix24.',
+        'Interviewed 9 teams, dug up 97 real process problems, and shipped 7 AI automations from scratch. They now save about 35 hours of manual work a week and cut operational overhead by 30%.',
+        'Counted the ROI before building anything: 10+ automation opportunities worth around $67K a year in projected savings.',
+        'Built everything end to end on n8n, custom APIs and PostgreSQL, with local and cloud LLMs (OpenClaw, Claude, Hermes Agent) sitting on RAG databases for accuracy. Process efficiency went up 39%, system integration got 20% faster.',
+        'Put two RAG-backed assistants into production: a legal FAQ bot and a media-buying guide navigator. Plus an automated Plan/Fact analytics pipeline and a document router that feeds Google Drive and Bitrix24.',
       ],
     },
     {
       company: 'afp.ai',
       role: 'AI Agent Architecture, International Division',
-      period: 'Jan 2024 — Present',
+      period: 'Jan 2024 - Present',
       location: 'Dubai, UAE',
       bullets: [
-        'Designed and shipped a fully autonomous multi-channel cold-outreach agent, automating the pipeline end to end from lead sourcing to deal close.',
-        'Built LLM-based lead scoring and routing that auto-classified companies by region and need, and hyper-personalized every LinkedIn/email message per lead — no templates.',
-        'Ran the outreach engine at 2,000+ cold emails a week across 10 fresh sequences every quarter, with zero extra headcount.',
+        'Designed and shipped a fully autonomous multi-channel cold outreach agent that runs the whole pipeline, from finding a lead to closing the deal.',
+        'Built LLM lead scoring and routing that sorts companies by region and need, and writes a personal LinkedIn or email message for every single lead. No templates.',
+        'The engine runs at 2,000+ cold emails a week across 10 fresh sequences every quarter, without hiring a single extra person.',
       ],
     },
     {
       company: 'Xenara Inc.',
       role: 'AI Call Intelligence',
-      period: 'Jun 2025 — Nov 2025',
+      period: 'Jun 2025 - Nov 2025',
       location: 'Toronto, Canada',
       bullets: [
-        'Built automatic transcription and AI analysis of client calls, extracting intent and objections and writing structured notes straight into the CRM with no manual entry.',
-        'Stood up the sales-automation stack (CRM, Apollo.io, LinkedIn Sales Navigator) for an autonomous AI customer-service platform launching into the US and EU.',
+        'Set up automatic transcription and AI analysis of client calls: the system pulls out intent and objections and writes structured notes straight into the CRM, no manual entry.',
+        'Stood up the whole sales automation stack (CRM, Apollo.io, LinkedIn Sales Navigator) for an autonomous AI customer service platform entering the US and EU.',
       ],
     },
     {
       company: 'Air Agency',
       role: 'Marketing Automation Engineer',
-      period: 'Aug 2017 — Aug 2019',
+      period: 'Aug 2017 - Aug 2019',
       location: 'Marbella, Spain',
       bullets: [
-        'Built a custom Python bot suite from scratch to run Instagram/Facebook campaigns: algorithmic audience targeting, auto-commenting on trigger hashtags, and a DM chatbot that qualified leads and escalated only complex queries.',
-        'Drove 376% audience growth and a 212% lift in engagement across 30 accounts within six months — 49.54% average growth sustained overall.',
+        'Wrote a custom Python bot suite from scratch to run Instagram and Facebook campaigns: audience targeting, auto-commenting on trigger hashtags, and a DM chatbot that qualified leads and only passed the tricky cases to a human.',
+        'Grew audiences 376% and engagement 212% across 30 accounts in six months, holding 49.54% average growth overall.',
       ],
     },
   ],
@@ -155,45 +155,45 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
     {
       company: 'afp.ai',
       role: 'Partnerships Manager → Head of Business Development',
-      period: 'Apr 2023 — Present',
+      period: 'Apr 2023 - Present',
       location: 'Dubai, UAE',
       bullets: [
-        'Manage a client portfolio generating ~$144K in quarterly recurring revenue across LatAm, MENA, Africa, EMEA, and APAC — personally brought in 18 of those partners across 12 publishers, 4 agencies, and 2 sellers.',
-        'Lead and trained a team of 5, lifting KPI attainment 30% and partnership engagement 21% within six months.',
-        'Ran 10 ad campaigns solo pre-promotion — lifting KPI performance 68% and cutting project lead times 32% — before moving into the leadership role.',
-        'Handle ~50 bilingual (EN/ES) client inquiries a week; partner-feedback analysis lifted engagement 39% in a year.',
-        'Named Employee of the Year, 2024.',
+        'Run a client portfolio doing around $144K in quarterly recurring revenue across LatAm, MENA, Africa, EMEA and APAC. 18 of those partners I brought in myself: 12 publishers, 4 agencies and 2 sellers.',
+        'Lead and train a team of 5. KPI attainment is up 30% and partnership engagement up 21% within six months.',
+        'Before the promotion I ran 10 ad campaigns solo, lifting KPI performance 68% and cutting project lead times 32%.',
+        'Handle around 50 client inquiries a week in English and Spanish. Acting on partner feedback lifted engagement 39% over a year.',
+        'Employee of the Year 2024.',
       ],
     },
     {
       company: 'Xenara Inc.',
       role: 'Head of Sales',
-      period: 'Jun 2025 — Nov 2025',
+      period: 'Jun 2025 - Nov 2025',
       location: 'Toronto, Canada',
       bullets: [
-        'Built the sales engine from nothing — CRM, workflows, performance tracking, and multi-channel lead gen via Apollo.io and LinkedIn Sales Navigator.',
-        'Closed 3 enterprise deals from a standing start, including one with a global e-commerce company.',
-        'Ran full-cycle sales: demos, closes, competitive positioning.',
+        'Built the sales engine from nothing: CRM, workflows, performance tracking and multi-channel lead gen through Apollo.io and LinkedIn Sales Navigator.',
+        'Walked away with 3 closed enterprise deals from a standing start, one of them with a global e-commerce company.',
+        'Ran the full sales cycle myself: demos, closes, competitive positioning.',
       ],
     },
     {
       company: 'Keywords Studios',
       role: 'Customer Experience Manager',
-      period: 'Oct 2021 — Apr 2023',
+      period: 'Oct 2021 - Apr 2023',
       location: 'Montreal, Canada',
       bullets: [
-        'Managed a team of 10 supporting a title with 140M+ downloads worldwide.',
-        'Ranked top 3 employee of the month every month for a year straight.',
+        'Managed a team of 10 supporting a game with 140M+ downloads worldwide.',
+        'Top 3 employee of the month, every single month, for a year straight.',
       ],
     },
     {
       company: 'PartyTeam',
       role: 'Events Lead',
-      period: 'Oct 2015 — Nov 2019',
+      period: 'Oct 2015 - Nov 2019',
       location: 'Marbella, Spain',
       bullets: [
-        'Planned and ran events for up to 35,000 attendees, 200+ events total.',
-        'Attracted 25 new regular clients every year; managed VIP relationships.',
+        'Planned and ran over 200 events, parties and concerts, some up to 35,000 people.',
+        'Brought in 25 new regular clients every year and handled the VIP relationships myself.',
       ],
     },
   ],
@@ -235,61 +235,6 @@ export const EDUCATION: EducationItem[] = [
   },
 ];
 
-interface Card {
-  code: string;
-  tag: string;
-  name: string;
-  desc: string;
-}
-
-export const PRODUCTS_TITLE: Record<Mode, string> = {
-  ai: 'Built on three systems.',
-  bd: 'Built on three markets.',
-};
-
-export const CARDS: Record<Mode, Card[]> = {
-  ai: [
-    {
-      code: 'A¹',
-      tag: '01 / AUT',
-      name: 'Automation',
-      desc: 'End-to-end workflow automation across marketing and sales ops, built with n8n, custom APIs, and PostgreSQL.',
-    },
-    {
-      code: 'B¹',
-      tag: '02 / RAG',
-      name: 'RAG & LLMs',
-      desc: 'Retrieval-augmented pipelines and local + cloud LLM deployments (Yandex AI Studio, OpenClaw) for contextual accuracy.',
-    },
-    {
-      code: 'A¹',
-      tag: '03 / AGT',
-      name: 'Agent Orchestration',
-      desc: 'Autonomous multi-agent workflows built with Claude Code, Hermes Agent, and custom integrations.',
-    },
-  ],
-  bd: [
-    {
-      code: 'A¹',
-      tag: '01 / BD',
-      name: 'Partnerships',
-      desc: 'Built and led BD teams across LatAm, MENA, GCC, and EMEA for adtech and SaaS platforms.',
-    },
-    {
-      code: 'B¹',
-      tag: '02 / SLS',
-      name: 'Sales Systems',
-      desc: 'CRM, outreach, and reporting infrastructure built from scratch to scale pipeline predictably.',
-    },
-    {
-      code: 'A¹',
-      tag: '03 / MKT',
-      name: 'Market Expansion',
-      desc: 'Positioned products against competitors and closed deals across luxury, banking, iGaming, and e-commerce.',
-    },
-  ],
-};
-
 interface InfoPair {
   label: string;
   value: string;
@@ -300,7 +245,7 @@ export const INFO: Record<Mode, InfoPair[]> = {
     { label: 'Stack', value: 'n8n · PostgreSQL · RAG' },
     { label: 'Core Business', value: 'Workflow Automation' },
     { label: 'Current Role', value: 'AI Automation Architect' },
-    { label: 'Approach', value: 'Audit → Automate → Scale' },
+    { label: 'Approach', value: 'Audit, automate, scale' },
   ],
   bd: [
     { label: 'Markets', value: 'LatAm · GCC · EMEA' },

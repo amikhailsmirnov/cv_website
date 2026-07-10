@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Asterisk, ArrowRight, ArrowDown, User, Bot } from 'lucide-react';
+import { ArrowRight, ArrowDown, User, Bot } from 'lucide-react';
 import { useMode } from './lib/ModeContext';
 import { MODE_LABEL, HERO } from './content';
 import type { Mode } from './lib/ModeContext';
@@ -77,6 +77,13 @@ export default function Hero() {
     };
 
     const setTargetFromX = (clientX: number) => {
+      // Cursor-driven scrubbing (and the mode flip that comes with it) only
+      // applies while the hero is basically on screen. Once the reader has
+      // scrolled down into the CV, waving the mouse around must never swap
+      // the resume out from under them — switching below the hero is done
+      // with the nav toggle only.
+      if (window.scrollY > window.innerHeight * 0.25) return;
+
       const nx = Math.min(1, Math.max(0, clientX / window.innerWidth));
 
       // Already locked to a side: stay pinned to that clean end frame until
@@ -263,18 +270,9 @@ export default function Hero() {
           Fixed, not absolute: the mode toggle is the site's core control, so
           it stays reachable while reading the CV sections below the hero. */}
       <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-3">
-      {/* NAVBAR — round icon + Business Dev / AI Agents toggle, one centered group */}
-      <nav className="anim fade flex items-center gap-2" style={{ animationDelay: '0.2s' }}>
-        <button
-          aria-label="Back to top"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center hover:bg-neutral-200 transition-colors shrink-0"
-        >
-          <Asterisk className="w-4 h-4 text-neutral-700" strokeWidth={2} />
-        </button>
-
-        {/* mode toggle — same on every breakpoint, only two options. Solid
-            backing + shadow once scrolled so it reads over section text. */}
+      {/* NAVBAR — the two-role toggle, labeled with the actual job titles.
+          Solid backing + shadow once scrolled so it reads over section text. */}
+      <nav className="anim fade" style={{ animationDelay: '0.2s' }}>
         <div
           className={`flex rounded-full p-1 items-center gap-1 transition-all duration-300 ${
             scrolled
@@ -287,7 +285,7 @@ export default function Hero() {
               key={m}
               onClick={() => selectMode(m)}
               aria-pressed={mode === m}
-              className={`px-4 py-1.5 rounded-full text-sm whitespace-nowrap transition-colors ${
+              className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm whitespace-nowrap transition-colors ${
                 mode === m
                   ? 'bg-white text-neutral-900 shadow-sm'
                   : 'text-neutral-500 hover:text-neutral-900'
@@ -345,7 +343,6 @@ export default function Hero() {
           className="anim fade mt-6 flex items-center gap-2 text-sm flex-wrap"
           style={{ animationDelay: '0.75s' }}
         >
-          <span className="text-neutral-400">Explore</span>
           {hero.tags.map((tag) => (
             <span
               key={tag}

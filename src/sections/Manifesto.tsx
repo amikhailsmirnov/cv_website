@@ -9,10 +9,10 @@ export default function Manifesto() {
   const items = MANIFESTO[mode];
 
   return (
-    <section className="w-full bg-white transition-colors duration-700 py-32 px-5 md:px-14">
+    <section className="w-full bg-white transition-colors duration-700 py-20 px-5 md:px-14">
       <div className="max-w-5xl mx-auto">
         <Reveal>
-          <p className="text-neutral-400 text-sm tracking-[0.1em] uppercase mb-10">
+          <p className="text-neutral-400 text-sm tracking-[0.1em] uppercase mb-8">
             My Direction
           </p>
         </Reveal>
@@ -20,7 +20,7 @@ export default function Manifesto() {
         <div className="sib-dim" key={mode}>
           {items.map((item, i) => (
             <Reveal key={item.idx} delay={i * 0.1}>
-              <div className="dim-item grid md:grid-cols-[80px_1fr] gap-6 py-10 border-t border-neutral-200">
+              <div className="dim-item grid md:grid-cols-[80px_1fr] gap-6 py-6 border-t border-neutral-200">
                 <div className="text-neutral-400 text-sm">{item.idx}</div>
                 <div>
                   <h3 className="font-playfair italic text-2xl sm:text-3xl text-neutral-900">
