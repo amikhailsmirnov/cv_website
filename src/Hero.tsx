@@ -161,7 +161,12 @@ export default function Hero() {
     target.current = m === 'ai' ? 1 : 0;
   };
 
+  const scrollToContent = () => {
+    window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+  };
+
   const hero = HERO[mode];
+  const otherMode: Mode = mode === 'ai' ? 'bd' : 'ai';
 
   return (
     <section
@@ -172,9 +177,12 @@ export default function Hero() {
           right end. Cursor or touch drag scrubs it like a filmstrip; letting
           go leaves it frozen on that frame. Crossing the center flips the
           whole site's mode. */}
-      <div className="absolute inset-0 z-10 flex justify-center items-center pt-16 pb-24">
+      {/* The wrap's bottom padding reserves room for the absolutely-positioned
+          headline block, so the height-driven card never slides under it on
+          short/mobile viewports. */}
+      <div className="absolute inset-0 z-10 flex justify-center items-center pt-28 pb-64 md:pt-16 md:pb-24">
         <div
-          className="relative w-[78vw] sm:w-[60vw] md:w-[30vw] max-w-[420px] aspect-[3/4] rounded-[2rem] overflow-hidden select-none bg-neutral-100"
+          className="relative h-full max-h-[560px] max-w-[86vw] aspect-[3/4] rounded-[2rem] overflow-hidden select-none bg-neutral-100"
           style={{ touchAction: 'pan-y' }}
         >
           <video
@@ -224,7 +232,7 @@ export default function Hero() {
               className="w-1/2 px-3 py-3 transition-opacity duration-500"
               style={{ opacity: mode === 'bd' ? 1 : 0.4 }}
             >
-              <span className="bg-white/85 backdrop-blur-sm rounded-full px-2.5 py-1 text-neutral-700">
+              <span className="bg-white/85 backdrop-blur-sm rounded-full px-2.5 py-1 text-neutral-700 whitespace-nowrap">
                 Business Dev
               </span>
             </div>
@@ -232,7 +240,7 @@ export default function Hero() {
               className="w-1/2 px-3 py-3 text-right transition-opacity duration-500"
               style={{ opacity: mode === 'ai' ? 1 : 0.4 }}
             >
-              <span className="bg-white/85 backdrop-blur-sm rounded-full px-2.5 py-1 text-neutral-700">
+              <span className="bg-white/85 backdrop-blur-sm rounded-full px-2.5 py-1 text-neutral-700 whitespace-nowrap">
                 AI Agents
               </span>
             </div>
@@ -261,7 +269,7 @@ export default function Hero() {
               key={m}
               onClick={() => selectMode(m)}
               aria-pressed={mode === m}
-              className={`px-4 py-1.5 rounded-full text-sm transition-colors ${
+              className={`px-4 py-1.5 rounded-full text-sm whitespace-nowrap transition-colors ${
                 mode === m
                   ? 'bg-white text-neutral-900 shadow-sm'
                   : 'text-neutral-500 hover:text-neutral-900'
@@ -273,14 +281,17 @@ export default function Hero() {
         </div>
       </nav>
 
-      {/* SUB-PILL — directly below navbar group, centered */}
+      {/* SUB-PILL — invites to the OTHER side; clicking flips the mode */}
       <div className="anim fade" style={{ animationDelay: '0.35s' }}>
-        <div className="bg-neutral-100/70 rounded-full px-4 py-1.5 text-xs text-neutral-500 flex items-center gap-2 whitespace-nowrap">
-          {hero.subPill}
+        <button
+          onClick={() => selectMode(otherMode)}
+          className="bg-neutral-100/70 hover:bg-neutral-100 rounded-full px-4 py-1.5 text-xs text-neutral-500 hover:text-neutral-700 flex items-center gap-2 whitespace-nowrap transition-colors"
+        >
+          {HERO[otherMode].subPill}
           <span className="w-5 h-5 rounded-full border border-neutral-300 flex items-center justify-center shrink-0">
             <ArrowRight className="w-3 h-3 text-neutral-500" strokeWidth={2} />
           </span>
-        </div>
+        </button>
       </div>
       </div>{/* end TOP NAV BLOCK */}
 
@@ -321,9 +332,13 @@ export default function Hero() {
 
       {/* SCROLL HINT — bottom-right so it never overlaps the bottom-left block */}
       <div className="absolute bottom-10 right-10 md:right-14 z-50">
-        <div className="w-8 h-12 rounded-full border border-neutral-300 flex items-start justify-center pt-2">
+        <button
+          aria-label="Scroll to content"
+          onClick={scrollToContent}
+          className="w-8 h-12 rounded-full border border-neutral-300 hover:border-neutral-400 flex items-start justify-center pt-2 transition-colors"
+        >
           <ArrowDown className="scroll-bounce w-4 h-4 text-neutral-400" strokeWidth={2} />
-        </div>
+        </button>
       </div>
     </section>
   );
