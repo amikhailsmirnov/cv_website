@@ -29,10 +29,10 @@ export default function Education() {
               <Reveal key={item.school} delay={i * 0.06}>
                 <div className="dim-item flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 py-4 border-t border-neutral-100">
                   <div>
-                    <span className="text-neutral-800">{item.school}</span>
-                    <span className="text-neutral-400 text-sm"> · {item.degree}</span>
+                    <span className={i < 2 ? 'text-neutral-800' : 'text-neutral-400'}>{item.school}</span>
+                    <span className={`text-sm ${i < 2 ? 'text-neutral-400' : 'text-neutral-300'}`}> · {item.degree}</span>
                   </div>
-                  <div className="text-neutral-400 text-sm shrink-0">{item.years}</div>
+                  <div className={`text-sm shrink-0 ${i < 2 ? 'text-neutral-400' : 'text-neutral-300'}`}>{item.years}</div>
                 </div>
               </Reveal>
             ))}

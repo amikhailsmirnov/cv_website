@@ -19,7 +19,7 @@ export default function Statement() {
       <div className="max-w-5xl mx-auto">
         <Reveal>
           <p className="text-neutral-400 text-sm tracking-[0.1em] uppercase mb-8">
-            Overview
+            What I do
           </p>
         </Reveal>
 
