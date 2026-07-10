@@ -97,6 +97,8 @@ interface ExperienceItem {
   role: string;
   period: string;
   location: string;
+  /** Honest context when the work happened inside a differently-titled job. */
+  note?: string;
   bullets: string[];
 }
 
@@ -121,9 +123,10 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
     },
     {
       company: 'afp.ai',
-      role: 'AI Agent Architecture, International Division',
+      role: 'Head of Business Development',
       period: 'Jan 2024 - Present',
       location: 'Dubai, UAE',
+      note: 'Same job as on the other side of this site. The title says business development; this is what I built to run it.',
       bullets: [
         'Designed and shipped a fully autonomous multi-channel cold outreach agent that runs the whole pipeline, from finding a lead to closing the deal.',
         'Built LLM lead scoring and routing that sorts companies by region and need, and writes a personal LinkedIn or email message for every single lead. No templates.',
@@ -132,9 +135,10 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
     },
     {
       company: 'Xenara Inc.',
-      role: 'AI Call Intelligence',
+      role: 'Head of Sales',
       period: 'Jun 2025 - Nov 2025',
       location: 'Toronto, Canada',
+      note: 'Hired to sell. Built this automation so I could sell faster.',
       bullets: [
         'Set up automatic transcription and AI analysis of client calls: the system pulls out intent and objections and writes structured notes straight into the CRM, no manual entry.',
         'Stood up the whole sales automation stack (CRM, Apollo.io, LinkedIn Sales Navigator) for an autonomous AI customer service platform entering the US and EU.',
@@ -142,9 +146,10 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
     },
     {
       company: 'Air Agency',
-      role: 'Marketing Automation Engineer',
+      role: 'Social Media Team Lead',
       period: 'Aug 2017 - Aug 2019',
       location: 'Marbella, Spain',
+      note: 'The job was running social media. I automated most of it with Python.',
       bullets: [
         'Wrote a custom Python bot suite from scratch to run Instagram and Facebook campaigns: audience targeting, auto-commenting on trigger hashtags, and a DM chatbot that qualified leads and only passed the tricky cases to a human.',
         'Grew audiences 376% and engagement 212% across 30 accounts in six months, holding 49.54% average growth overall.',

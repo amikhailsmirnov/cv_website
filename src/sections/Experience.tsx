@@ -38,6 +38,11 @@ export default function Experience() {
                     {item.company}
                     <span className="text-neutral-400"> · {item.role}</span>
                   </h3>
+                  {item.note && (
+                    <p className="font-playfair italic text-neutral-400 text-sm mt-1">
+                      {item.note}
+                    </p>
+                  )}
                   <ul className="mt-3 space-y-1.5">
                     {item.bullets.map((bullet) => (
                       <li key={bullet} className="text-neutral-500 text-sm leading-snug pl-4 relative">
