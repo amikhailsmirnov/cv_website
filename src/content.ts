@@ -199,6 +199,42 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
   ],
 };
 
+interface EducationItem {
+  school: string;
+  degree: string;
+  years: string;
+}
+
+// Not mode-dependent — same person, same schooling, regardless of which side
+// of the toggle you're looking at.
+export const EDUCATION: EducationItem[] = [
+  {
+    school: 'Universidad Europea Miguel de Cervantes',
+    degree: "Bachelor's Degree, Tourism",
+    years: '2017–2021',
+  },
+  {
+    school: 'Hello Coding',
+    degree: 'Associate Degree, Mobile App Development',
+    years: '2017–2019',
+  },
+  {
+    school: 'The Academy of Radio and TV Broadcasting',
+    degree: "Associate's Degree, Radio and Television",
+    years: '2021',
+  },
+  {
+    school: 'Novikov Elite Culinary School',
+    degree: "Associate's Degree, Culinary Arts / Chef Training",
+    years: '2020–2021',
+  },
+  {
+    school: 'LAUDE San Pedro International College',
+    degree: 'High School, Tourism and Travel Services Management',
+    years: '2009–2017',
+  },
+];
+
 interface Card {
   code: string;
   tag: string;
