@@ -244,7 +244,7 @@ export default function Hero() {
           short/mobile viewports. */}
       <div className="absolute inset-0 z-10 flex justify-center items-center pt-28 pb-72 md:pt-16 md:pb-28">
         <div
-          className="relative h-full max-h-[560px] max-w-[86vw] aspect-[3/4] rounded-[2rem] overflow-hidden select-none bg-neutral-100"
+          className="relative aspect-video w-[92vw] max-w-[960px] md:w-auto md:h-full md:max-h-[540px] rounded-2xl md:rounded-[2rem] overflow-hidden select-none bg-neutral-100"
           style={{ touchAction: 'pan-y' }}
         >
           <div
@@ -302,8 +302,9 @@ export default function Hero() {
             </div>
           )}
 
-          {/* per-side labels */}
-          <div className="absolute inset-x-0 bottom-0 flex text-[10px] sm:text-xs tracking-[0.1em] uppercase">
+          {/* per-side labels — top corners, clear of the headline that overlaps
+              the card's bottom edge on desktop */}
+          <div className="absolute inset-x-0 top-0 flex text-[10px] sm:text-xs tracking-[0.1em] uppercase">
             <div
               className="w-1/2 px-3 py-3 transition-opacity duration-500"
               style={{ opacity: mode === 'bd' ? 1 : 0.4 }}
