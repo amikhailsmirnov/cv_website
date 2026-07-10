@@ -11,7 +11,9 @@ interface ModeContextValue {
 const ModeContext = createContext<ModeContextValue | null>(null);
 
 export function ModeProvider({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<Mode>('ai');
+  // The hero clip's first frame sits at the left (BD) end of the timeline,
+  // and the page opens on that first frame — so BD is the opening mode.
+  const [mode, setMode] = useState<Mode>('bd');
   return (
     <ModeContext.Provider value={{ mode, setMode }}>
       {children}

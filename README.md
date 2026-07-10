@@ -10,6 +10,6 @@ npm run dev      # http://localhost:5173
 npm run build    # tsc + vite build
 ```
 
-## Hero clips
+## Hero clip
 
-The hero carries two clips, `public/hero-bd.mp4` and `public/hero-ai.mp4`, scrubbed by cursor/finger position like a filmstrip — they never play on their own. From the screen's center, dragging left winds the BD clip forward and dragging right winds the AI clip forward, with a crossfade between them at the middle. Drag far enough into the outer ~30% on either side and that clip snaps to its final frame and **locks** (ignoring small jitter) so the matching CV is readable, flipping the whole site's mode. Drag back past the middle to unlock. Scrubbing only works while the hero is on screen; below it, switching happens via the nav toggle only. If a clip fails to load, a static split placeholder renders instead.
+The hero is one full-bleed clip (`public/hero.mp4`) scrubbed by cursor/finger position like a filmstrip — it never plays on its own. Cursor X across the window maps onto the timeline: far left = first frame = Business Dev, far right = last frame = AI. The page opens on the first frame. Drag far enough into the outer ~30% on either side and the clip snaps to that end and **locks** (ignoring small jitter) so the matching CV is readable, flipping the whole site's mode. Scrubbing only works while the hero is on screen; below it, switching happens via the nav toggle only. If the clip fails to load, a static split placeholder renders instead.
