@@ -5,8 +5,8 @@ import type { Mode } from './lib/ModeContext';
 // Studios, PartyTeam, Air Agency).
 
 export const MODE_LABEL: Record<Mode, string> = {
-  ai: 'AI Automation Architect',
-  bd: 'Head of Business Development',
+  ai: 'AI & Automation',
+  bd: 'Business Dev',
 };
 
 interface HeroContent {
@@ -57,17 +57,17 @@ export const MANIFESTO: Record<Mode, ManifestoItem[]> = {
     {
       idx: '0.1',
       title: 'My Mission',
-      desc: 'Audit first, automate second. Cut cost and routine, not corners.',
+      desc: "I map what's actually costing time and money before I touch a single tool. Then I build agents that remove the grind — not just move it somewhere else.",
     },
     {
       idx: '0.2',
       title: 'My Vision',
-      desc: 'Every workflow has an agent quietly running behind it.',
+      desc: 'Good automation is invisible. It runs in the background and the people it serves stop thinking about it — they just get their time back.',
     },
     {
       idx: '0.3',
       title: 'My Ambition',
-      desc: 'Build automation architecture that scales past the first integration.',
+      desc: "Most AI integrations break the moment a third tool gets added. I want to build systems that people are still running two years later.",
     },
   ],
   bd: [
@@ -253,22 +253,23 @@ export const CONTACTS: ContactLink[] = [
   { label: 't.me/amikhailsmirnov', href: 'https://t.me/amikhailsmirnov' },
 ];
 
-interface InfoPair {
-  label: string;
+export interface StatItem {
   value: string;
+  label: string;
 }
 
-export const INFO: Record<Mode, InfoPair[]> = {
+// Numbers pulled directly from the experience bullets — nothing invented.
+export const STATS: Record<Mode, StatItem[]> = {
   ai: [
-    { label: 'Stack', value: 'n8n · PostgreSQL · RAG' },
-    { label: 'Core Business', value: 'Workflow Automation' },
-    { label: 'Current Role', value: 'AI Automation Architect' },
-    { label: 'Approach', value: 'Audit, automate, scale' },
+    { value: '7',    label: 'automations shipped from scratch at Go Mobile' },
+    { value: '35h',  label: 'manual work saved every single week' },
+    { value: '$67K', label: 'projected annual savings identified upfront' },
+    { value: '39%',  label: 'process efficiency gain across integrated teams' },
   ],
   bd: [
-    { label: 'Markets', value: 'LatAm · GCC · EMEA' },
-    { label: 'Core Business', value: 'B2B / SaaS Partnerships' },
-    { label: 'Current Role', value: 'Head of Business Development' },
-    { label: 'Languages', value: 'EN C2 · ES C1 · RU native' },
+    { value: '$144K', label: 'quarterly recurring revenue managed at afp.ai' },
+    { value: '18',    label: 'partners personally brought in across 5 regions' },
+    { value: '30%',   label: 'KPI attainment increase within 6 months' },
+    { value: '50+',   label: 'client inquiries handled every week' },
   ],
 };

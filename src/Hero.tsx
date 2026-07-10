@@ -17,10 +17,9 @@ const VIDEO_SRC: Record<Mode, string> = {
   ai: '/hero-ai.mp4',
 };
 
-// 0.22 keeps the seam feeling live without over-shooting on fast sweeps.
-const LERP     = 0.22;
-const LOCK_BD  = 0.3;
-const LOCK_AI  = 0.7;
+const LERP      = 0.22;
+const LOCK_BD   = 0.3;
+const LOCK_AI   = 0.7;
 const UNLOCK_BD = 0.38;
 const UNLOCK_AI = 0.62;
 const BD_START  = 0.45;
@@ -32,20 +31,31 @@ const MODES: Mode[] = ['bd', 'ai'];
 export default function Hero() {
   const { mode, setMode } = useMode();
 
-  const bdRef  = useRef<HTMLVideoElement>(null);
-  const aiRef  = useRef<HTMLVideoElement>(null);
+  const bdRef   = useRef<HTMLVideoElement>(null);
+  const aiRef   = useRef<HTMLVideoElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
-  const [videoReady, setVideoReady]       = useState(false);
+  const [videoReady, setVideoReady]         = useState(false);
   const [videoAvailable, setVideoAvailable] = useState(true);
-  const [scrolled, setScrolled]           = useState(false);
+  const [scrolled, setScrolled]             = useState(false);
+  const [hintVisible, setHintVisible]       = useState(true);
+
   const seekingBd = useRef(false);
   const seekingAi = useRef(false);
 
-  const target = useRef(AI_START);
-  const smooth = useRef(AI_START);
-  const locked = useRef<Mode | null>(null);
+  const target       = useRef(AI_START);
+  const smooth       = useRef(AI_START);
+  const locked       = useRef<Mode | null>(null);
   const spotlightRef = useRef<HTMLDivElement>(null);
   const seamRef      = useRef<HTMLDivElement>(null);
+
+  const isTouch = window.matchMedia('(pointer: coarse)').matches;
+
+  // Auto-dismiss the explore hint after 4 s on desktop; stays until tap on touch.
+  useEffect(() => {
+    if (isTouch) return;
+    const t = setTimeout(() => setHintVisible(false), 4000);
+    return () => clearTimeout(t);
+  }, [isTouch]);
 
   useEffect(() => {
     const bd   = bdRef.current;
@@ -92,11 +102,36 @@ export default function Hero() {
       }
     };
 
-    // Passive mouse-follow: seam tracks cursor position whenever the pointer
-    // is anywhere over the card — no click required.
-    const onPointerMove = (e: PointerEvent) => setTargetFromX(e.clientX);
+    // Touch: short tap on left/right half of card switches mode.
+    let tapStartX  = 0;
+    let tapStartMs = 0;
 
-    // When the pointer leaves, ease back to whichever side is locked (or hold).
+    const onPointerDown = (e: PointerEvent) => {
+      if (e.pointerType !== 'touch') return;
+      tapStartX  = e.clientX;
+      tapStartMs = Date.now();
+    };
+
+    const onPointerUp = (e: PointerEvent) => {
+      if (e.pointerType !== 'touch') return;
+      const moved   = Math.abs(e.clientX - tapStartX);
+      const elapsed = Date.now() - tapStartMs;
+      if (moved < 15 && elapsed < 300) {
+        const tapped: Mode = clamp01(e.clientX / window.innerWidth) < 0.5 ? 'bd' : 'ai';
+        locked.current = tapped;
+        target.current = tapped === 'ai' ? 1 : 0;
+        setMode(tapped);
+        setHintVisible(false);
+      }
+    };
+
+    // Desktop: seam follows cursor; dismiss hint on first real hover.
+    const onPointerMove = (e: PointerEvent) => {
+      if (e.pointerType === 'touch') return;
+      setHintVisible(false);
+      setTargetFromX(e.clientX);
+    };
+
     const onPointerLeave = () => {
       if (!locked.current) target.current = smooth.current;
     };
@@ -133,7 +168,9 @@ export default function Hero() {
       if (video.error) onError();
     }
 
-    card?.addEventListener('pointermove', onPointerMove);
+    card?.addEventListener('pointerdown',  onPointerDown);
+    card?.addEventListener('pointerup',    onPointerUp);
+    card?.addEventListener('pointermove',  onPointerMove);
     card?.addEventListener('pointerleave', onPointerLeave);
 
     const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.5);
@@ -148,7 +185,9 @@ export default function Hero() {
         video.removeEventListener('seeked', onSeeked);
         video.removeEventListener('error', onError);
       }
-      card?.removeEventListener('pointermove', onPointerMove);
+      card?.removeEventListener('pointerdown',  onPointerDown);
+      card?.removeEventListener('pointerup',    onPointerUp);
+      card?.removeEventListener('pointermove',  onPointerMove);
       card?.removeEventListener('pointerleave', onPointerLeave);
       window.removeEventListener('scroll', onScroll);
     };
@@ -178,8 +217,7 @@ export default function Hero() {
               videoAvailable && videoReady ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            {/* object-top crops the bottom of the frame where EZRemove left
-                a white/faded edge, keeping the face front and centre. */}
+            {/* object-top crops the white/faded bottom edge left by EZRemove */}
             <video
               ref={bdRef}
               src={VIDEO_SRC.bd}
@@ -220,11 +258,26 @@ export default function Hero() {
               />
             </div>
           )}
+
+          {/* Explore hint — auto-fades on desktop, dismissed on first tap on touch */}
+          <div
+            className="absolute inset-x-0 bottom-0 flex items-end justify-between px-4 pb-3 pointer-events-none select-none"
+            style={{
+              opacity: hintVisible ? 1 : 0,
+              transition: 'opacity 0.7s ease',
+              background: 'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 100%)',
+            }}
+          >
+            <span className="text-white/75 text-xs tracking-wide">← Business Dev</span>
+            <span className="text-white/45 text-[10px] tracking-[0.14em] uppercase">
+              {isTouch ? 'tap to switch' : 'move to explore'}
+            </span>
+            <span className="text-white/75 text-xs tracking-wide">AI & Automation →</span>
+          </div>
         </div>
       </div>
 
-      {/* Gradient height kept to 15% so it stays well below the card bottom
-          and only softens the seam between hero and next section. */}
+      {/* z-20 keeps this below the card (z-30); only softens the hero→section seam */}
       <div className="hero-gradient absolute inset-x-0 bottom-0 z-20 pointer-events-none" />
 
       <nav className="fixed top-5 left-1/2 -translate-x-1/2 z-50">
