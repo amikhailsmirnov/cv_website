@@ -4,10 +4,12 @@ import { useMode } from './lib/ModeContext';
 import { MODE_LABEL, HERO } from './content';
 import type { Mode } from './lib/ModeContext';
 
-// Split portrait: human (left) = Business Dev, robot (right) = AI Agents.
-// Drop the real half-human/half-robot photo here once it's available — the
-// interaction below (cursor → spotlight → mode) works unchanged either way.
-const HERO_PHOTO = '/hero-face.jpg';
+// A human↔robot morph clip. It is never played — it's scrubbed by cursor/
+// touch position, like a filmstrip. Left end (t=0) = fully human = Business
+// Dev. Right end (t=duration) = fully robot = AI Agents. When the pointer
+// stops moving, the clip simply stays on its current frame (nothing plays it
+// forward), so it reads as a still photo until the next drag.
+const HERO_VIDEO = '/hero.mp4';
 
 // Per-frame easing toward the cursor-mapped target position (0..1).
 const LERP = 0.1;
@@ -23,18 +25,46 @@ export default function Hero() {
   const modeRef = useRef(mode);
   modeRef.current = mode;
 
-  const [photoAvailable, setPhotoAvailable] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoReady, setVideoReady] = useState(false);
+  // hero.mp4 hasn't landed yet — until it does, the scrub clip is replaced by
+  // a static human/robot split so the hero never shows a broken frame.
+  const [videoAvailable, setVideoAvailable] = useState(true);
+  const isSeeking = useRef(false);
 
   // Mutable scrub state — kept in refs so it survives re-renders without
   // triggering them. target: cursor position mapped directly across the full
   // viewport width (0 = far left / human / BD, 1 = far right / robot / AI).
-  // smooth: eased value that chases target each frame and drives the spotlight.
+  // smooth: eased value that chases target each frame and drives the seek.
   const target = useRef(mode === 'ai' ? 1 : 0);
   const smooth = useRef(mode === 'ai' ? 1 : 0);
   const spotlightRef = useRef<HTMLDivElement>(null);
   const seamRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const video = videoRef.current;
+
+    const onLoaded = () => setVideoReady(true);
+    const onError = () => setVideoAvailable(false);
+
+    // The browser processes one seek at a time. When a seek finishes, if the
+    // smoothed target has moved on, chain another seek so none are dropped.
+    const onSeeked = () => {
+      isSeeking.current = false;
+      if (video && video.duration && Math.abs(smooth.current * video.duration - video.currentTime) > 0.01) {
+        requestSeek();
+      }
+    };
+
+    const requestSeek = () => {
+      if (!video || !video.duration) return;
+      const nextTime = smooth.current * video.duration;
+      if (isSeeking.current) return;
+      if (Math.abs(nextTime - video.currentTime) < 0.01) return;
+      isSeeking.current = true;
+      video.currentTime = nextTime;
+    };
+
     const setTargetFromX = (clientX: number) => {
       const nx = Math.min(1, Math.max(0, clientX / window.innerWidth));
       target.current = nx;
@@ -49,12 +79,15 @@ export default function Hero() {
     const tick = () => {
       smooth.current += (target.current - smooth.current) * LERP;
 
-      const pct = smooth.current * 100;
-      if (spotlightRef.current) {
-        spotlightRef.current.style.left = `${pct}%`;
-      }
-      if (seamRef.current) {
-        seamRef.current.style.opacity = String(0.15 + Math.abs(smooth.current - 0.5) * 0.5);
+      if (video && video.duration) {
+        requestSeek();
+      } else {
+        // No clip yet — drive the fallback spotlight instead.
+        const pct = smooth.current * 100;
+        if (spotlightRef.current) spotlightRef.current.style.left = `${pct}%`;
+        if (seamRef.current) {
+          seamRef.current.style.opacity = String(0.15 + Math.abs(smooth.current - 0.5) * 0.5);
+        }
       }
 
       if (modeRef.current === 'bd' && smooth.current > SWITCH_TO_AI) {
@@ -67,11 +100,24 @@ export default function Hero() {
     };
     rafId = requestAnimationFrame(tick);
 
+    if (video) {
+      video.pause();
+      video.addEventListener('loadeddata', onLoaded);
+      video.addEventListener('seeked', onSeeked);
+      video.addEventListener('error', onError);
+      if (video.readyState >= 2) onLoaded();
+      if (video.error) onError();
+    }
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('touchmove', onTouchMove, { passive: true });
 
     return () => {
       cancelAnimationFrame(rafId);
+      if (video) {
+        video.removeEventListener('loadeddata', onLoaded);
+        video.removeEventListener('seeked', onSeeked);
+        video.removeEventListener('error', onError);
+      }
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('touchmove', onTouchMove);
     };
@@ -89,23 +135,27 @@ export default function Hero() {
       className="relative w-full overflow-hidden h-screen h-[100dvh] bg-white"
       style={{ height: '100dvh' }}
     >
-      {/* SPLIT PORTRAIT — human/BD on the left, robot/AI on the right. The
-          cursor (or a touch drag) sweeps a spotlight across it; crossing the
-          center flips the whole site's mode. */}
+      {/* PORTRAIT — human/BD at the left end of the clip, robot/AI at the
+          right end. Cursor or touch drag scrubs it like a filmstrip; letting
+          go leaves it frozen on that frame. Crossing the center flips the
+          whole site's mode. */}
       <div className="absolute inset-0 z-10 flex justify-center items-center pt-16 pb-24">
         <div
-          className="relative w-[78vw] sm:w-[60vw] md:w-[30vw] max-w-[420px] aspect-[3/4] rounded-[2rem] overflow-hidden select-none"
+          className="relative w-[78vw] sm:w-[60vw] md:w-[30vw] max-w-[420px] aspect-[3/4] rounded-[2rem] overflow-hidden select-none bg-neutral-100"
           style={{ touchAction: 'pan-y' }}
         >
-          {photoAvailable ? (
-            <img
-              src={HERO_PHOTO}
-              alt="Mikhail Smirnov — half AI Automation Architect, half Business Development leader"
-              draggable={false}
-              onError={() => setPhotoAvailable(false)}
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-          ) : (
+          <video
+            ref={videoRef}
+            src={HERO_VIDEO}
+            muted
+            playsInline
+            preload="auto"
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+              videoAvailable && videoReady ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
+
+          {(!videoAvailable || !videoReady) && (
             <div className="absolute inset-0 flex">
               <div className="w-1/2 h-full flex items-center justify-center bg-gradient-to-br from-[#f1ece4] to-[#e4dcd2]">
                 <User className="w-12 h-12 md:w-16 md:h-16 text-neutral-500" strokeWidth={1} />
@@ -113,27 +163,27 @@ export default function Hero() {
               <div className="w-1/2 h-full flex items-center justify-center bg-gradient-to-bl from-[#e4e7ec] to-[#d4d7dc]">
                 <Bot className="w-12 h-12 md:w-16 md:h-16 text-neutral-500" strokeWidth={1} />
               </div>
+
+              {/* seam — fixed center line, brightens as the spotlight nears it */}
+              <div
+                ref={seamRef}
+                className="absolute inset-y-0 left-1/2 w-px bg-white/80"
+                style={{ opacity: 0.15 }}
+              />
+
+              {/* spotlight — eases toward the cursor-mapped position each frame */}
+              <div
+                ref={spotlightRef}
+                className="absolute inset-y-0 w-1/3 pointer-events-none"
+                style={{
+                  left: `${(mode === 'ai' ? 1 : 0) * 100}%`,
+                  transform: 'translateX(-50%)',
+                  background:
+                    'radial-gradient(ellipse at center, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 70%)',
+                }}
+              />
             </div>
           )}
-
-          {/* seam — fixed center line, brightens as the spotlight nears it */}
-          <div
-            ref={seamRef}
-            className="absolute inset-y-0 left-1/2 w-px bg-white/80"
-            style={{ opacity: 0.15 }}
-          />
-
-          {/* spotlight — eases toward the cursor-mapped position each frame */}
-          <div
-            ref={spotlightRef}
-            className="absolute inset-y-0 w-1/3 pointer-events-none"
-            style={{
-              left: `${(mode === 'ai' ? 1 : 0) * 100}%`,
-              transform: 'translateX(-50%)',
-              background:
-                'radial-gradient(ellipse at center, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 70%)',
-            }}
-          />
 
           {/* per-side labels */}
           <div className="absolute inset-x-0 bottom-0 flex text-[10px] sm:text-xs tracking-[0.1em] uppercase">
