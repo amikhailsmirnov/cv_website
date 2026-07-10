@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@1,400;1,500;1,600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: 'Inter', sans-serif;
+}
+
+.font-playfair {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Hero bottom fade — desktop defaults. Mobile is overridden below via vars. */
+.hero-gradient {
+  height: 42%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 45%,
+    #ffffff 85%
+  );
+}
+
+/* MOBILE hero (<768px): final tuned values. */
+@media (max-width: 767px) {
+  .hero-video-wrap {
+    align-items: flex-start;
+    padding-top: 8vh;
+  }
+  .hero-video {
+    width: 192%;
+    height: auto;
+    transform: translateY(145px);
+  }
+  .hero-gradient {
+    height: 42%;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.6) 45%,
+      #ffffff 85%
+    );
+  }
+}
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Subtle "alive" pulse for accent elements (opacity-only). */
+@keyframes cardPulse {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+.card-pulse {
+  animation: cardPulse 3s ease-in-out infinite;
+}
+
+/* Sibling-dim hover: hovering one row fades its siblings to 0.5. Targets
+   .dim-item (inner element), never the Framer reveal wrapper, so inline reveal
+   opacity and this CSS opacity don't collide. */
+.dim-item {
+  transition: opacity 0.2s ease;
+}
+.sib-dim:hover .dim-item {
+  opacity: 0.5;
+}
+.sib-dim .dim-item:hover {
+  opacity: 1;
+}
+
+@keyframes heroReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes heroFade {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Base "hidden until animated" marker. The animation classes below carry the
+   full shorthand (incl. fill-mode + timing) so the shorthand can't reset them. */
+.anim {
+  opacity: 0;
+}
+
+.reveal {
+  animation: heroReveal 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.fade {
+  animation: heroFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes heroVideoIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.video-in {
+  animation: heroVideoIn 1s ease forwards;
+}
+
+@keyframes scrollBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+.scroll-bounce {
+  animation: scrollBounce 1.8s ease-in-out infinite;
+}
+
+/* Fallback hero visual (shown until /hero.mp4 exists). Two soft radial fields
+   — cool for the AI side, warm for the BD side — cross-fade emphasis with the
+   mode toggle instead of the video's cursor-scrub. */
+@keyframes fallbackDrift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -12px, 0) scale(1.03);
+  }
+}
+
+.hero-fallback-orb {
+  animation: fallbackDrift 7s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim {
+    opacity: 1;
+  }
+  .reveal,
+  .fade,
+  .video-in,
+  .scroll-bounce,
+  .card-pulse,
+  .hero-fallback-orb {
+    animation: none;
+  }
+}
