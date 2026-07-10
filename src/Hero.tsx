@@ -31,11 +31,16 @@ const LERP = 0.1;
 // tracking the cursor — so the matching CV freezes on screen to read. The
 // middle band is a live pass-through: the clips just wind with the cursor,
 // and nothing locks in yet. Unlock thresholds sit slightly inside the lock
-// thresholds so hovering right at the edge doesn't flicker.
+// thresholds so hovering right at the edge doesn't flicker. A small dead
+// zone straddles the center (BD_START..AI_START) where both clips rest on
+// their FIRST frame — that's also where the crossfade happens — so the page
+// opens on frame one, not mid-wind.
 const LOCK_BD = 0.3;
 const LOCK_AI = 0.7;
 const UNLOCK_BD = 0.38;
 const UNLOCK_AI = 0.62;
+const BD_START = 0.45;
+const AI_START = 0.55;
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
@@ -58,15 +63,15 @@ export default function Hero() {
 
   // Mutable scrub state — kept in refs so it survives re-renders without
   // triggering them. target: where the scrub should ease toward across the
-  // full window width (0 = far left / BD fully wound, 0.5 = center / both
-  // clips at their first frame, 1 = far right / AI fully wound). smooth:
-  // the eased value that actually drives the seeks and the crossfade.
-  // locked: which side (if any) is pinned — while locked, cursor movement
-  // inside that same reveal zone is ignored so the freeze-frame holds still.
-  // The site opens in AI mode, so start locked on the AI clip's final frame.
-  const target = useRef(1);
-  const smooth = useRef(1);
-  const locked = useRef<Mode | null>('ai');
+  // full window width (0 = far left / BD fully wound, center = both clips
+  // on their first frame, 1 = far right / AI fully wound). smooth: the
+  // eased value that actually drives the seeks and the crossfade. locked:
+  // which side (if any) is pinned — while locked, cursor movement inside
+  // that same reveal zone is ignored so the freeze-frame holds still.
+  // The site opens in AI mode showing the AI clip's FIRST frame, unwound.
+  const target = useRef(AI_START);
+  const smooth = useRef(AI_START);
+  const locked = useRef<Mode | null>(null);
   const spotlightRef = useRef<HTMLDivElement>(null);
   const seamRef = useRef<HTMLDivElement>(null);
 
@@ -78,8 +83,9 @@ export default function Hero() {
     const onError = () => setVideoAvailable(false);
 
     // How far each side's clip is wound, given the smoothed cursor position.
-    const bdProgress = () => clamp01((0.5 - smooth.current) / (0.5 - LOCK_BD));
-    const aiProgress = () => clamp01((smooth.current - 0.5) / (LOCK_AI - 0.5));
+    // Inside the center dead zone both sit at 0 (their first frame).
+    const bdProgress = () => clamp01((BD_START - smooth.current) / (BD_START - LOCK_BD));
+    const aiProgress = () => clamp01((smooth.current - AI_START) / (LOCK_AI - AI_START));
 
     // The browser processes one seek per video at a time. When a seek
     // finishes, if the smoothed target has moved on, chain another one so
