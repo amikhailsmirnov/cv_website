@@ -306,6 +306,6 @@ export const INFO: Record<Mode, InfoPair[]> = {
     { label: 'Markets', value: 'LatAm · GCC · EMEA' },
     { label: 'Core Business', value: 'B2B / SaaS Partnerships' },
     { label: 'Current Role', value: 'Head of Business Development' },
-    { label: 'Languages', value: 'EN · ES · RU' },
+    { label: 'Languages', value: 'EN C2 · ES C1 · RU native' },
   ],
 };

@@ -35,6 +35,9 @@ export default function Hero() {
   // hero.mp4 hasn't landed yet — until it does, the scrub clip is replaced by
   // a static human/robot split so the hero never shows a broken frame.
   const [videoAvailable, setVideoAvailable] = useState(true);
+  // Past the hero, the fixed nav compacts: sub-pill hides and the toggle gets
+  // an opaque backing so it stays legible over section text.
+  const [scrolled, setScrolled] = useState(false);
   const isSeeking = useRef(false);
 
   // Mutable scrub state — kept in refs so it survives re-renders without
@@ -140,8 +143,12 @@ export default function Hero() {
       if (video.readyState >= 2) onLoaded();
       if (video.error) onError();
     }
+    const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.5);
+    onScroll();
+
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
 
     return () => {
       cancelAnimationFrame(rafId);
@@ -152,6 +159,7 @@ export default function Hero() {
       }
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('scroll', onScroll);
     };
   }, [setMode]);
 
@@ -251,19 +259,29 @@ export default function Hero() {
       {/* BOTTOM FADE — the portrait dissolves into pure white, no hard edge. */}
       <div className="hero-gradient absolute inset-x-0 bottom-0 z-20 pointer-events-none" />
 
-      {/* TOP NAV BLOCK — one centered column: navbar group + sub-pill below */}
-      <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-3">
+      {/* TOP NAV BLOCK — one centered column: navbar group + sub-pill below.
+          Fixed, not absolute: the mode toggle is the site's core control, so
+          it stays reachable while reading the CV sections below the hero. */}
+      <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-3">
       {/* NAVBAR — round icon + Business Dev / AI Agents toggle, one centered group */}
       <nav className="anim fade flex items-center gap-2" style={{ animationDelay: '0.2s' }}>
         <button
-          aria-label="Mikhail Smirnov"
+          aria-label="Back to top"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center hover:bg-neutral-200 transition-colors shrink-0"
         >
           <Asterisk className="w-4 h-4 text-neutral-700" strokeWidth={2} />
         </button>
 
-        {/* mode toggle — same on every breakpoint, only two options */}
-        <div className="flex bg-neutral-100/80 backdrop-blur-md rounded-full p-1 items-center gap-1">
+        {/* mode toggle — same on every breakpoint, only two options. Solid
+            backing + shadow once scrolled so it reads over section text. */}
+        <div
+          className={`flex rounded-full p-1 items-center gap-1 transition-all duration-300 ${
+            scrolled
+              ? 'bg-neutral-100 shadow-lg shadow-neutral-900/10'
+              : 'bg-neutral-100/80 backdrop-blur-md'
+          }`}
+        >
           {MODES.map((m) => (
             <button
               key={m}
@@ -281,7 +299,15 @@ export default function Hero() {
         </div>
       </nav>
 
-      {/* SUB-PILL — invites to the OTHER side; clicking flips the mode */}
+      {/* SUB-PILL — invites to the OTHER side; clicking flips the mode.
+          Hero-only: fades out once the page is scrolled. The scrolled fade
+          lives on this outer div because the entrance animation's forwards
+          fill on the inner one would override an opacity utility there. */}
+      <div
+        className={`transition-opacity duration-300 ${
+          scrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
+      >
       <div className="anim fade" style={{ animationDelay: '0.35s' }}>
         <button
           onClick={() => selectMode(otherMode)}
@@ -293,6 +319,7 @@ export default function Hero() {
           </span>
         </button>
       </div>
+      </div>{/* end sub-pill scrolled-fade wrapper */}
       </div>{/* end TOP NAV BLOCK */}
 
       {/* BOTTOM-LEFT BLOCK */}
