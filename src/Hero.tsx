@@ -1,8 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowRight, ArrowDown, User, Bot } from 'lucide-react';
+import { ArrowRight, ArrowDown, User, Bot, Mail, Phone, Linkedin, Send } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useMode } from './lib/ModeContext';
-import { MODE_LABEL, HERO } from './content';
+import { MODE_LABEL, HERO, CONTACTS } from './content';
 import type { Mode } from './lib/ModeContext';
+
+const contactIcon = (href: string): LucideIcon => {
+  if (href.startsWith('mailto:')) return Mail;
+  if (href.startsWith('tel:')) return Phone;
+  if (href.includes('linkedin')) return Linkedin;
+  return Send;
+};
 
 // A human↔robot profile-turn clip, e.g. the head rotating from a straight-on
 // human side profile at one end to a full robot side profile at the other.
@@ -195,7 +203,7 @@ export default function Hero() {
       {/* The wrap's bottom padding reserves room for the absolutely-positioned
           headline block, so the height-driven card never slides under it on
           short/mobile viewports. */}
-      <div className="absolute inset-0 z-10 flex justify-center items-center pt-28 pb-64 md:pt-16 md:pb-24">
+      <div className="absolute inset-0 z-10 flex justify-center items-center pt-28 pb-72 md:pt-16 md:pb-28">
         <div
           className="relative h-full max-h-[560px] max-w-[86vw] aspect-[3/4] rounded-[2rem] overflow-hidden select-none bg-neutral-100"
           style={{ touchAction: 'pan-y' }}
@@ -320,19 +328,24 @@ export default function Hero() {
       </div>{/* end sub-pill scrolled-fade wrapper */}
       </div>{/* end TOP NAV BLOCK */}
 
-      {/* BOTTOM-LEFT BLOCK */}
-      <div className="absolute bottom-16 left-5 md:left-14 z-50">
-        <p className="text-sm font-medium text-neutral-900 mb-3">Mikhail Smirnov</p>
+      {/* BOTTOM-LEFT BLOCK — name, location, headline, tags, and the direct
+          contact row. Contacts live here on purpose: they're visible the
+          moment the page opens, not buried in the footer. */}
+      <div className="absolute bottom-12 md:bottom-14 left-5 md:left-14 right-5 z-50">
+        <p className="text-sm text-neutral-900 mb-2">
+          <span className="font-medium">Mikhail Smirnov</span>
+          <span className="text-neutral-400"> · Batumi, Georgia</span>
+        </p>
 
         <h1 className="text-neutral-900 leading-[1.0]" key={mode}>
           <span
-            className="anim reveal block font-playfair italic text-5xl sm:text-6xl md:text-7xl"
+            className="anim reveal block font-playfair italic text-4xl sm:text-6xl md:text-7xl"
             style={{ animationDelay: '0.4s' }}
           >
             {hero.line1}
           </span>
           <span
-            className="anim reveal block text-5xl sm:text-6xl md:text-7xl -mt-1"
+            className="anim reveal block text-4xl sm:text-6xl md:text-7xl -mt-1"
             style={{ animationDelay: '0.55s', letterSpacing: '-0.04em' }}
           >
             {hero.line2}
@@ -340,7 +353,7 @@ export default function Hero() {
         </h1>
 
         <div
-          className="anim fade mt-6 flex items-center gap-2 text-sm flex-wrap"
+          className="anim fade mt-4 flex items-center gap-2 text-sm flex-wrap"
           style={{ animationDelay: '0.75s' }}
         >
           {hero.tags.map((tag) => (
@@ -351,6 +364,29 @@ export default function Hero() {
               {tag}
             </span>
           ))}
+        </div>
+
+        {/* CONTACTS — real values, all clickable. Right padding on mobile
+            keeps the last link clear of the scroll-hint button. */}
+        <div
+          className="anim fade mt-4 flex items-center gap-x-4 gap-y-1.5 text-xs flex-wrap pr-12 md:pr-0"
+          style={{ animationDelay: '0.9s' }}
+        >
+          {CONTACTS.map((c) => {
+            const Icon = contactIcon(c.href);
+            return (
+              <a
+                key={c.href}
+                href={c.href}
+                target={c.href.startsWith('http') ? '_blank' : undefined}
+                rel={c.href.startsWith('http') ? 'noreferrer' : undefined}
+                className="inline-flex items-center gap-1.5 text-neutral-500 hover:text-neutral-900 transition-colors"
+              >
+                <Icon className="w-3.5 h-3.5" strokeWidth={1.75} />
+                {c.label}
+              </a>
+            );
+          })}
         </div>
       </div>
 

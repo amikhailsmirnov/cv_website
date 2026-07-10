@@ -1,9 +1,4 @@
-const LINKS = [
-  { label: 'Email', href: 'mailto:amikhailsmirnov@gmail.com' },
-  { label: '+995 59 100 4603', href: 'tel:+995591004603' },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/amikhailsmirnov' },
-  { label: 'Telegram', href: 'https://t.me/amikhailsmirnov' },
-];
+import { CONTACTS } from '../content';
 
 // FOOTER — dark. Wordmark + sibling-dim links, fine print, and an oversized
 // low-opacity decorative wordmark.
@@ -24,7 +19,7 @@ export default function Footer() {
           <span className="text-white/80 text-sm">Mikhail Smirnov</span>
 
           <nav className="sib-dim flex flex-col items-start gap-1.5 md:gap-3 md:items-end">
-            {LINKS.map((link) => (
+            {CONTACTS.map((link) => (
               <a
                 key={link.label}
                 href={link.href}

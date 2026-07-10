@@ -205,34 +205,50 @@ interface EducationItem {
   years: string;
 }
 
-// Not mode-dependent — same person, same schooling, regardless of which side
-// of the toggle you're looking at.
-export const EDUCATION: EducationItem[] = [
-  {
-    school: 'Universidad Europea Miguel de Cervantes',
-    degree: "Bachelor's Degree, Tourism",
-    years: '2017–2021',
-  },
-  {
-    school: 'Hello Coding',
-    degree: 'Associate Degree, Mobile App Development',
-    years: '2017–2019',
-  },
-  {
-    school: 'The Academy of Radio and TV Broadcasting',
-    degree: "Associate's Degree, Radio and Television",
-    years: '2021',
-  },
-  {
-    school: 'Novikov Elite Culinary School',
-    degree: "Associate's Degree, Culinary Arts / Chef Training",
-    years: '2020–2021',
-  },
-  {
-    school: 'LAUDE San Pedro International College',
-    degree: 'High School, Tourism and Travel Services Management',
-    years: '2009–2017',
-  },
+const UNIVERSIDAD: EducationItem = {
+  school: 'Universidad Europea Miguel de Cervantes',
+  degree: "Bachelor's Degree, Tourism",
+  years: '2017–2021',
+};
+const HELLO_CODING: EducationItem = {
+  school: 'Hello Coding',
+  degree: 'Associate Degree, Mobile App Development',
+  years: '2017–2019',
+};
+const RADIO_TV: EducationItem = {
+  school: 'The Academy of Radio and TV Broadcasting',
+  degree: "Associate's Degree, Radio and Television",
+  years: '2021',
+};
+const NOVIKOV: EducationItem = {
+  school: 'Novikov Elite Culinary School',
+  degree: "Associate's Degree, Culinary Arts / Chef Training",
+  years: '2020–2021',
+};
+const LAUDE: EducationItem = {
+  school: 'LAUDE San Pedro International College',
+  degree: 'High School, Tourism and Travel Services Management',
+  years: '2009–2017',
+};
+
+// Same schooling either way, but ordered by what matters to each resume:
+// the coding degree leads on the AI side, the tourism/business track leads
+// on the BD side.
+export const EDUCATION: Record<Mode, EducationItem[]> = {
+  ai: [HELLO_CODING, UNIVERSIDAD, RADIO_TV, NOVIKOV, LAUDE],
+  bd: [UNIVERSIDAD, LAUDE, HELLO_CODING, RADIO_TV, NOVIKOV],
+};
+
+export interface ContactLink {
+  label: string;
+  href: string;
+}
+
+export const CONTACTS: ContactLink[] = [
+  { label: 'amikhailsmirnov@gmail.com', href: 'mailto:amikhailsmirnov@gmail.com' },
+  { label: '+995 59 100 4603', href: 'tel:+995591004603' },
+  { label: 'linkedin.com/in/amikhailsmirnov', href: 'https://www.linkedin.com/in/amikhailsmirnov' },
+  { label: 't.me/amikhailsmirnov', href: 'https://t.me/amikhailsmirnov' },
 ];
 
 interface InfoPair {
