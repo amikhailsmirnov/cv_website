@@ -12,7 +12,7 @@
   font-family: 'Playfair Display', serif;
 }
 
-/* Hero bottom fade — desktop defaults. Mobile is overridden below via vars. */
+/* Hero bottom fade — the portrait dissolves into the white page. */
 .hero-gradient {
   height: 42%;
   background: linear-gradient(
@@ -21,28 +21,6 @@
     rgba(255, 255, 255, 0.6) 45%,
     #ffffff 85%
   );
-}
-
-/* MOBILE hero (<768px): final tuned values. */
-@media (max-width: 767px) {
-  .hero-video-wrap {
-    align-items: flex-start;
-    padding-top: 8vh;
-  }
-  .hero-video {
-    width: 192%;
-    height: auto;
-    transform: translateY(145px);
-  }
-  .hero-gradient {
-    height: 42%;
-    background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.6) 45%,
-      #ffffff 85%
-    );
-  }
 }
 
 /* Lenis smooth scroll */
@@ -125,19 +103,6 @@ html.lenis body {
   animation: heroFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-@keyframes heroVideoIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-.video-in {
-  animation: heroVideoIn 1s ease forwards;
-}
-
 @keyframes scrollBounce {
   0%,
   100% {
@@ -152,33 +117,14 @@ html.lenis body {
   animation: scrollBounce 1.8s ease-in-out infinite;
 }
 
-/* Fallback hero visual (shown until /hero.mp4 exists). Two soft radial fields
-   — cool for the AI side, warm for the BD side — cross-fade emphasis with the
-   mode toggle instead of the video's cursor-scrub. */
-@keyframes fallbackDrift {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(0, -12px, 0) scale(1.03);
-  }
-}
-
-.hero-fallback-orb {
-  animation: fallbackDrift 7s ease-in-out infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .anim {
     opacity: 1;
   }
   .reveal,
   .fade,
-  .video-in,
   .scroll-bounce,
-  .card-pulse,
-  .hero-fallback-orb {
+  .card-pulse {
     animation: none;
   }
 }

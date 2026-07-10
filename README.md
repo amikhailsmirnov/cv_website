@@ -10,6 +10,6 @@ npm run dev      # http://localhost:5173
 npm run build    # tsc + vite build
 ```
 
-## Hero video
+## Hero photo
 
-The hero is wired for a cursor/finger-scrubbed video (`public/hero.mp4`) but no clip has been added yet — until one exists, the hero shows a static duotone fallback. Drop a video at `public/hero.mp4` and the scrub interaction activates automatically, no code changes needed.
+The hero is a split human/robot portrait (`public/hero-face.jpg`): human half = Business Dev, robot half = AI Agents. Moving the cursor (or dragging a finger) left/right sweeps a spotlight across it and flips the whole site's mode past the center line. No photo has been added yet, so a placeholder split panel renders instead — drop a portrait at `public/hero-face.jpg` and it's picked up automatically, no code changes needed.

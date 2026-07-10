@@ -1,121 +1,86 @@
 import { useEffect, useRef, useState } from 'react';
-import { Asterisk, ArrowRight, ArrowDown, Bot, Handshake } from 'lucide-react';
+import { Asterisk, ArrowRight, ArrowDown, User, Bot } from 'lucide-react';
 import { useMode } from './lib/ModeContext';
 import { MODE_LABEL, HERO } from './content';
 import type { Mode } from './lib/ModeContext';
 
-const HERO_VIDEO = '/hero.mp4';
+// Split portrait: human (left) = Business Dev, robot (right) = AI Agents.
+// Drop the real half-human/half-robot photo here once it's available — the
+// interaction below (cursor → spotlight → mode) works unchanged either way.
+const HERO_PHOTO = '/hero-face.jpg';
 
-// Per-frame easing toward the cursor-mapped target time (0..1).
+// Per-frame easing toward the cursor-mapped target position (0..1).
 const LERP = 0.1;
+// Hysteresis band around the center so hovering near the seam doesn't flicker
+// the mode back and forth.
+const SWITCH_TO_AI = 0.58;
+const SWITCH_TO_BD = 0.42;
 
-const MODES: Mode[] = ['ai', 'bd'];
+const MODES: Mode[] = ['bd', 'ai'];
 
 export default function Hero() {
   const { mode, setMode } = useMode();
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
 
-  // Mutable scrub state — kept in refs so it survives re-renders without triggering them.
-  // targetTime: cursor position mapped directly to the timeline (absolute).
-  // smoothTime: eased value that chases targetTime each frame and drives seeks.
-  const targetTime = useRef(0);
-  const smoothTime = useRef(0);
-  const isSeeking = useRef(false);
+  const [photoAvailable, setPhotoAvailable] = useState(true);
 
-  const [videoReady, setVideoReady] = useState(false);
-  // hero.mp4 hasn't landed yet — until it does, the scrub video is replaced by
-  // a static duotone fallback so the hero never shows a broken/blank frame.
-  const [videoAvailable, setVideoAvailable] = useState(true);
+  // Mutable scrub state — kept in refs so it survives re-renders without
+  // triggering them. target: cursor position mapped directly across the full
+  // viewport width (0 = far left / human / BD, 1 = far right / robot / AI).
+  // smooth: eased value that chases target each frame and drives the spotlight.
+  const target = useRef(mode === 'ai' ? 1 : 0);
+  const smooth = useRef(mode === 'ai' ? 1 : 0);
+  const spotlightRef = useRef<HTMLDivElement>(null);
+  const seamRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    // Start at the MIDDLE of the clip — head straight forward. The cursor
-    // position is unknown until the first pointermove, so we hold center; once
-    // the pointer moves, the head eases from center toward its mapped position.
-    const onMeta = () => {
-      if (!video.duration) return;
-      video.pause();
-      targetTime.current = video.duration / 2;
-      smoothTime.current = video.duration / 2;
-      video.currentTime = video.duration / 2;
-    };
-
-    // Fade the video in once the centered frame is actually decoded.
-    const onLoaded = () => {
-      setVideoReady(true);
-    };
-
-    const onError = () => {
-      setVideoAvailable(false);
-    };
-
-    // The browser processes one seek at a time. When a seek finishes, if the
-    // smoothed target has moved on, chain another seek so none are dropped.
-    const onSeeked = () => {
-      isSeeking.current = false;
-      if (Math.abs(smoothTime.current - video.currentTime) > 0.01) {
-        requestSeek();
-      }
-    };
-
-    const requestSeek = () => {
-      if (!video.duration) return;
-      if (isSeeking.current) return;
-      if (Math.abs(smoothTime.current - video.currentTime) < 0.01) return;
-      isSeeking.current = true;
-      video.currentTime = smoothTime.current;
-    };
-
-    // Absolute mapping: cursor X across the full viewport width maps directly to
-    // the timeline. Left edge → 0 (head fully left), center → duration/2
-    // (straight), right edge → duration (fully right). Full amplitude.
     const setTargetFromX = (clientX: number) => {
-      if (!video.duration) return;
       const nx = Math.min(1, Math.max(0, clientX / window.innerWidth));
-      targetTime.current = nx * video.duration;
+      target.current = nx;
     };
 
     const onPointerMove = (e: PointerEvent) => setTargetFromX(e.clientX);
-
     // Touch: same absolute mapping. Never preventDefault, so vertical scroll
-    // stays native (the container also sets touch-action: pan-y).
+    // stays native (the visual also sets touch-action: pan-y).
     const onTouchMove = (e: TouchEvent) => setTargetFromX(e.touches[0].clientX);
 
-    // rAF loop: ease smoothTime toward targetTime, then seek to it.
     let rafId = 0;
     const tick = () => {
-      if (video.duration) {
-        smoothTime.current += (targetTime.current - smoothTime.current) * LERP;
-        requestSeek();
+      smooth.current += (target.current - smooth.current) * LERP;
+
+      const pct = smooth.current * 100;
+      if (spotlightRef.current) {
+        spotlightRef.current.style.left = `${pct}%`;
       }
+      if (seamRef.current) {
+        seamRef.current.style.opacity = String(0.15 + Math.abs(smooth.current - 0.5) * 0.5);
+      }
+
+      if (modeRef.current === 'bd' && smooth.current > SWITCH_TO_AI) {
+        setMode('ai');
+      } else if (modeRef.current === 'ai' && smooth.current < SWITCH_TO_BD) {
+        setMode('bd');
+      }
+
       rafId = requestAnimationFrame(tick);
     };
     rafId = requestAnimationFrame(tick);
 
-    video.addEventListener('loadedmetadata', onMeta);
-    video.addEventListener('loadeddata', onLoaded);
-    video.addEventListener('seeked', onSeeked);
-    video.addEventListener('error', onError);
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('touchmove', onTouchMove, { passive: true });
 
-    // Already buffered (e.g. fast cache / hot reload).
-    if (video.readyState >= 1) onMeta();
-    if (video.readyState >= 2) onLoaded();
-    if (video.error) onError();
-
     return () => {
       cancelAnimationFrame(rafId);
-      video.removeEventListener('loadedmetadata', onMeta);
-      video.removeEventListener('loadeddata', onLoaded);
-      video.removeEventListener('seeked', onSeeked);
-      video.removeEventListener('error', onError);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('touchmove', onTouchMove);
     };
-  }, []);
+  }, [setMode]);
+
+  const selectMode = (m: Mode) => {
+    setMode(m);
+    target.current = m === 'ai' ? 1 : 0;
+  };
 
   const hero = HERO[mode];
 
@@ -124,87 +89,80 @@ export default function Hero() {
       className="relative w-full overflow-hidden h-screen h-[100dvh] bg-white"
       style={{ height: '100dvh' }}
     >
-      {/* VIDEO — desktop: ~85% height centered. Mobile sizing/position via CSS
-          (.hero-video* in index.css). Hidden until /hero.mp4 exists. */}
-      {videoAvailable && (
+      {/* SPLIT PORTRAIT — human/BD on the left, robot/AI on the right. The
+          cursor (or a touch drag) sweeps a spotlight across it; crossing the
+          center flips the whole site's mode. */}
+      <div className="absolute inset-0 z-10 flex justify-center items-center pt-16 pb-24">
         <div
-          className="hero-video-wrap absolute inset-0 z-10 flex justify-center items-center"
+          className="relative w-[78vw] sm:w-[60vw] md:w-[30vw] max-w-[420px] aspect-[3/4] rounded-[2rem] overflow-hidden select-none"
           style={{ touchAction: 'pan-y' }}
         >
-          <video
-            ref={videoRef}
-            src={HERO_VIDEO}
-            muted
-            playsInline
-            preload="auto"
-            className={`hero-video object-contain mx-auto select-none max-w-none md:h-[85%] md:w-auto md:max-h-[85vh] md:max-w-[92vw] ${
-              videoReady ? 'video-in' : 'opacity-0'
-            }`}
+          {photoAvailable ? (
+            <img
+              src={HERO_PHOTO}
+              alt="Mikhail Smirnov — half AI Automation Architect, half Business Development leader"
+              draggable={false}
+              onError={() => setPhotoAvailable(false)}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 flex">
+              <div className="w-1/2 h-full flex items-center justify-center bg-gradient-to-br from-[#f1ece4] to-[#e4dcd2]">
+                <User className="w-12 h-12 md:w-16 md:h-16 text-neutral-500" strokeWidth={1} />
+              </div>
+              <div className="w-1/2 h-full flex items-center justify-center bg-gradient-to-bl from-[#e4e7ec] to-[#d4d7dc]">
+                <Bot className="w-12 h-12 md:w-16 md:h-16 text-neutral-500" strokeWidth={1} />
+              </div>
+            </div>
+          )}
+
+          {/* seam — fixed center line, brightens as the spotlight nears it */}
+          <div
+            ref={seamRef}
+            className="absolute inset-y-0 left-1/2 w-px bg-white/80"
+            style={{ opacity: 0.15 }}
+          />
+
+          {/* spotlight — eases toward the cursor-mapped position each frame */}
+          <div
+            ref={spotlightRef}
+            className="absolute inset-y-0 w-1/3 pointer-events-none"
             style={{
-              // Fade the video's own bottom edge to transparent so the body melts
-              // into the white page on every breakpoint — kills the hard frame line
-              // even on mobile where the (width-scaled) video sits above the
-              // bottom-anchored gradient overlay. Composes with the overlay below.
-              WebkitMaskImage:
-                'linear-gradient(to bottom, #000 78%, transparent 100%)',
-              maskImage: 'linear-gradient(to bottom, #000 78%, transparent 100%)',
+              left: `${(mode === 'ai' ? 1 : 0) * 100}%`,
+              transform: 'translateX(-50%)',
+              background:
+                'radial-gradient(ellipse at center, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 70%)',
             }}
           />
-        </div>
-      )}
 
-      {/* FALLBACK — shown until hero.mp4 is dropped into /public. Two soft
-          duotone fields (cool = AI, warm = BD) that lean toward whichever mode
-          is active, standing in for the video's cursor-driven interaction. */}
-      {!videoAvailable && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center">
-          <div className="relative w-[70vmin] h-[70vmin] max-w-[560px] max-h-[560px]">
+          {/* per-side labels */}
+          <div className="absolute inset-x-0 bottom-0 flex text-[10px] sm:text-xs tracking-[0.1em] uppercase">
             <div
-              className="hero-fallback-orb absolute inset-0 rounded-full transition-opacity duration-700 ease-out"
-              style={{
-                background:
-                  'radial-gradient(circle at 35% 35%, #d4d7dc 0%, #eceef1 55%, rgba(238,239,241,0) 75%)',
-                opacity: mode === 'ai' ? 1 : 0.35,
-              }}
-            />
+              className="w-1/2 px-3 py-3 transition-opacity duration-500"
+              style={{ opacity: mode === 'bd' ? 1 : 0.4 }}
+            >
+              <span className="bg-white/85 backdrop-blur-sm rounded-full px-2.5 py-1 text-neutral-700">
+                Business Dev
+              </span>
+            </div>
             <div
-              className="hero-fallback-orb absolute inset-0 rounded-full transition-opacity duration-700 ease-out"
-              style={{
-                background:
-                  'radial-gradient(circle at 65% 65%, #e4dcd2 0%, #f1ece4 55%, rgba(241,236,228,0) 75%)',
-                opacity: mode === 'bd' ? 1 : 0.35,
-                animationDelay: '-3.5s',
-              }}
-            />
-            <div className="absolute inset-0 flex items-center justify-center gap-10">
-              <Bot
-                className="w-10 h-10 md:w-12 md:h-12 text-neutral-500 transition-all duration-500"
-                strokeWidth={1.25}
-                style={{
-                  opacity: mode === 'ai' ? 0.9 : 0.25,
-                  transform: mode === 'ai' ? 'scale(1.08)' : 'scale(1)',
-                }}
-              />
-              <Handshake
-                className="w-10 h-10 md:w-12 md:h-12 text-neutral-500 transition-all duration-500"
-                strokeWidth={1.25}
-                style={{
-                  opacity: mode === 'bd' ? 0.9 : 0.25,
-                  transform: mode === 'bd' ? 'scale(1.08)' : 'scale(1)',
-                }}
-              />
+              className="w-1/2 px-3 py-3 text-right transition-opacity duration-500"
+              style={{ opacity: mode === 'ai' ? 1 : 0.4 }}
+            >
+              <span className="bg-white/85 backdrop-blur-sm rounded-full px-2.5 py-1 text-neutral-700">
+                AI Agents
+              </span>
             </div>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* BOTTOM FADE — character dissolves into pure white, no hard edge.
-          Desktop fixed; mobile height/stops driven by CSS (index.css). */}
+      {/* BOTTOM FADE — the portrait dissolves into pure white, no hard edge. */}
       <div className="hero-gradient absolute inset-x-0 bottom-0 z-20 pointer-events-none" />
 
       {/* TOP NAV BLOCK — one centered column: navbar group + sub-pill below */}
       <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-3">
-      {/* NAVBAR — round icon + AI Agents / Business Dev toggle, one centered group */}
+      {/* NAVBAR — round icon + Business Dev / AI Agents toggle, one centered group */}
       <nav className="anim fade flex items-center gap-2" style={{ animationDelay: '0.2s' }}>
         <button
           aria-label="Mikhail Smirnov"
@@ -218,7 +176,7 @@ export default function Hero() {
           {MODES.map((m) => (
             <button
               key={m}
-              onClick={() => setMode(m)}
+              onClick={() => selectMode(m)}
               aria-pressed={mode === m}
               className={`px-4 py-1.5 rounded-full text-sm transition-colors ${
                 mode === m
