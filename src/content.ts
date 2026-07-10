@@ -111,9 +111,10 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       role: 'AI Automation Architect',
       period: 'Nov 2025 — Present',
       bullets: [
-        'Audited agency workflows through cross-functional interviews, surfacing bottlenecks and modeling the ROI case before building anything.',
-        'Built end-to-end automations and integrations on n8n, custom APIs, and PostgreSQL; deployed and managed multiple LLMs, including local hosting, OpenClaw, Claude, and Hermes Agent.',
-        'Shipped two production RAG-backed AI assistants — an internal legal-FAQ assistant and a media-buying guide navigator — plus an automated Plan/Fact media analytics pipeline and a document-routing system feeding Google Drive and Bitrix24.',
+        'Surveyed 9 teams, surfaced 97 real process problems, and shipped 7 AI automations from scratch that cut roughly 35 hours of manual work every week.',
+        'Audited workflows through cross-functional interviews and modeled the ROI case before building anything.',
+        'Built end-to-end automations on n8n, custom APIs, and PostgreSQL; deployed local + cloud LLMs (OpenClaw, Claude, Hermes Agent) with RAG databases underneath for accuracy.',
+        'Shipped two production RAG-backed AI assistants — an internal legal-FAQ assistant and a media-buying guide navigator — plus an automated Plan/Fact analytics pipeline and a document router feeding Google Drive and Bitrix24.',
       ],
     },
     {
@@ -123,7 +124,7 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       bullets: [
         'Designed and shipped a fully autonomous multi-channel cold-outreach agent, automating the pipeline end to end from lead sourcing to deal close.',
         'Built LLM-based lead scoring and routing that auto-classified companies by region and need, and hyper-personalized every LinkedIn/email message per lead — no templates.',
-        'Scaled cold-outreach throughput several times over with zero extra headcount.',
+        'Ran the outreach engine at 2,000+ cold emails a week across 10 fresh sequences every quarter, with zero extra headcount.',
       ],
     },
     {
@@ -151,9 +152,9 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       role: 'Partnerships Manager → Head of Business Development',
       period: 'Apr 2023 — Present',
       bullets: [
-        'Lead a team of 5 across LatAm, MENA, Africa, EMEA, and APAC outreach.',
-        'Ran 10 ad campaigns solo end to end — media planning, BrandLift research, KPI tracking, and reporting — before moving into the leadership role.',
-        'Bilingual (EN/ES) consultations, contracts, and closing across luxury, banking, pharma, and iGaming clients.',
+        'Manage a client portfolio generating roughly $144K in quarterly recurring revenue across LatAm, MENA, Africa, EMEA, and APAC.',
+        'Personally brought in 18 partners across five regions — 12 publishers, 4 agencies, 2 sellers.',
+        'Lead a team of 5; ran 10 ad campaigns solo end to end before moving into the leadership role.',
         'Named Employee of the Year, 2024.',
       ],
     },
@@ -162,8 +163,8 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       role: 'Head of Sales',
       period: 'Jun 2025 — Nov 2025',
       bullets: [
-        'Built US/EU e-commerce sales infrastructure from scratch for an autonomous AI customer-service platform.',
-        'Launched multi-channel lead gen with Apollo.io and LinkedIn Sales Navigator.',
+        'Built the sales engine from nothing — CRM, workflows, performance tracking, and multi-channel lead gen via Apollo.io and LinkedIn Sales Navigator.',
+        'Closed 3 enterprise deals from a standing start, including one with a global e-commerce company.',
         'Ran full-cycle sales: demos, closes, competitive positioning.',
       ],
     },
