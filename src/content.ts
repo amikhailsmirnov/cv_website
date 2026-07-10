@@ -96,6 +96,7 @@ interface ExperienceItem {
   company: string;
   role: string;
   period: string;
+  location: string;
   bullets: string[];
 }
 
@@ -110,6 +111,7 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       company: 'Go Mobile',
       role: 'AI Automation Architect',
       period: 'Nov 2025 — Present',
+      location: 'Jakarta, Indonesia',
       bullets: [
         'Surveyed 9 teams, surfaced 97 real process problems, and shipped 7 AI automations from scratch that cut roughly 35 hours of manual work every week.',
         'Audited workflows through cross-functional interviews and modeled the ROI case before building anything.',
@@ -121,6 +123,7 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       company: 'afp.ai',
       role: 'AI Agent Architecture, International Division',
       period: 'Jan 2024 — Present',
+      location: 'Dubai, UAE',
       bullets: [
         'Designed and shipped a fully autonomous multi-channel cold-outreach agent, automating the pipeline end to end from lead sourcing to deal close.',
         'Built LLM-based lead scoring and routing that auto-classified companies by region and need, and hyper-personalized every LinkedIn/email message per lead — no templates.',
@@ -131,6 +134,7 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       company: 'Xenara Inc.',
       role: 'AI Call Intelligence',
       period: 'Jun 2025 — Nov 2025',
+      location: 'Toronto, Canada',
       bullets: [
         'Built automatic transcription and AI analysis of client calls, extracting intent and objections and writing structured notes straight into the CRM with no manual entry.',
         'Stood up the sales-automation stack (CRM, Apollo.io, LinkedIn Sales Navigator) for an autonomous AI customer-service platform launching into the US and EU.',
@@ -140,6 +144,7 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       company: 'Air Agency',
       role: 'Marketing Automation Engineer',
       period: 'Aug 2017 — Aug 2019',
+      location: 'Marbella, Spain',
       bullets: [
         'Built a custom Python bot suite from scratch to run Instagram/Facebook campaigns: algorithmic audience targeting, auto-commenting on trigger hashtags, and a DM chatbot that qualified leads and escalated only complex queries.',
         'Fully automated the SMM team’s lead-gen and moderation workload, driving 49.54% average audience growth across a 30-account portfolio.',
@@ -151,6 +156,7 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       company: 'afp.ai',
       role: 'Partnerships Manager → Head of Business Development',
       period: 'Apr 2023 — Present',
+      location: 'Dubai, UAE',
       bullets: [
         'Manage a client portfolio generating roughly $144K in quarterly recurring revenue across LatAm, MENA, Africa, EMEA, and APAC.',
         'Personally brought in 18 partners across five regions — 12 publishers, 4 agencies, 2 sellers.',
@@ -162,6 +168,7 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       company: 'Xenara Inc.',
       role: 'Head of Sales',
       period: 'Jun 2025 — Nov 2025',
+      location: 'Toronto, Canada',
       bullets: [
         'Built the sales engine from nothing — CRM, workflows, performance tracking, and multi-channel lead gen via Apollo.io and LinkedIn Sales Navigator.',
         'Closed 3 enterprise deals from a standing start, including one with a global e-commerce company.',
@@ -172,6 +179,7 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       company: 'Keywords Studios',
       role: 'Customer Experience Manager',
       period: 'Oct 2021 — Apr 2023',
+      location: 'Montreal, Canada',
       bullets: [
         'Managed a team of 10 supporting a title with 140M+ downloads worldwide.',
         'Ranked top 3 employee of the month every month for a year straight.',
@@ -181,6 +189,7 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       company: 'PartyTeam',
       role: 'Events Lead',
       period: 'Oct 2015 — Nov 2019',
+      location: 'Marbella, Spain',
       bullets: [
         'Planned and ran events for up to 35,000 attendees, 200+ events total.',
         'Attracted 25 new regular clients every year; managed VIP relationships.',

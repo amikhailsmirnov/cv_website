@@ -29,7 +29,10 @@ export default function Experience() {
           {items.map((item, i) => (
             <Reveal key={item.company} delay={i * 0.1}>
               <div className="dim-item grid md:grid-cols-[180px_1fr] gap-4 md:gap-6 py-8 border-t border-neutral-200">
-                <div className="text-neutral-400 text-sm">{item.period}</div>
+                <div>
+                  <div className="text-neutral-400 text-sm">{item.period}</div>
+                  <div className="text-neutral-300 text-xs mt-1">{item.location}</div>
+                </div>
                 <div>
                   <h3 className="text-xl text-neutral-900">
                     {item.company}
