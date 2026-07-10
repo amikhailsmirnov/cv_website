@@ -4,26 +4,31 @@ import { useMode } from './lib/ModeContext';
 import { MODE_LABEL, HERO } from './content';
 import type { Mode } from './lib/ModeContext';
 
-// A human↔robot morph clip. It is never played — it's scrubbed by cursor/
-// touch position, like a filmstrip. Left end (t=0) = fully human = Business
-// Dev. Right end (t=duration) = fully robot = AI Agents. When the pointer
-// stops moving, the clip simply stays on its current frame (nothing plays it
-// forward), so it reads as a still photo until the next drag.
+// A human↔robot profile-turn clip, e.g. the head rotating from a straight-on
+// human side profile at one end to a full robot side profile at the other.
+// It is never played — it's scrubbed by cursor/touch position, like a
+// filmstrip. Left end (t=0) = human side profile = Business Dev. Right end
+// (t=duration) = robot side profile = AI Agents.
 const HERO_VIDEO = '/hero.mp4';
 
 // Per-frame easing toward the cursor-mapped target position (0..1).
 const LERP = 0.1;
-// Hysteresis band around the center so hovering near the seam doesn't flicker
-// the mode back and forth.
-const SWITCH_TO_AI = 0.58;
-const SWITCH_TO_BD = 0.42;
+
+// The outer band on each side is the "reveal zone": drag far enough into it
+// and the clip snaps to that end's clean profile shot and locks there — no
+// more tracking the cursor — so the matching CV freezes on screen to read.
+// The middle band is a live pass-through: the clip just follows the cursor,
+// mid-turn, and nothing locks in yet. Unlock thresholds sit slightly inside
+// the lock thresholds so hovering right at the edge doesn't flicker.
+const LOCK_BD = 0.3;
+const LOCK_AI = 0.7;
+const UNLOCK_BD = 0.38;
+const UNLOCK_AI = 0.62;
 
 const MODES: Mode[] = ['bd', 'ai'];
 
 export default function Hero() {
   const { mode, setMode } = useMode();
-  const modeRef = useRef(mode);
-  modeRef.current = mode;
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoReady, setVideoReady] = useState(false);
@@ -33,11 +38,14 @@ export default function Hero() {
   const isSeeking = useRef(false);
 
   // Mutable scrub state — kept in refs so it survives re-renders without
-  // triggering them. target: cursor position mapped directly across the full
-  // viewport width (0 = far left / human / BD, 1 = far right / robot / AI).
-  // smooth: eased value that chases target each frame and drives the seek.
-  const target = useRef(mode === 'ai' ? 1 : 0);
-  const smooth = useRef(mode === 'ai' ? 1 : 0);
+  // triggering them. target: where the clip should ease toward (0 = human
+  // profile, 1 = robot profile, in between = mid-turn). smooth: the eased
+  // value that actually drives the seek/spotlight. locked: which side (if
+  // any) is currently pinned — while locked, cursor movement inside that same
+  // reveal zone is ignored so the freeze-frame holds still to read.
+  const target = useRef(0.5);
+  const smooth = useRef(0.5);
+  const locked = useRef<Mode | null>(null);
   const spotlightRef = useRef<HTMLDivElement>(null);
   const seamRef = useRef<HTMLDivElement>(null);
 
@@ -67,7 +75,37 @@ export default function Hero() {
 
     const setTargetFromX = (clientX: number) => {
       const nx = Math.min(1, Math.max(0, clientX / window.innerWidth));
-      target.current = nx;
+
+      // Already locked to a side: stay pinned to that clean end frame until
+      // the cursor pulls back past the (wider) unlock threshold.
+      if (locked.current === 'bd') {
+        if (nx > UNLOCK_BD) locked.current = null;
+        else {
+          target.current = 0;
+          return;
+        }
+      } else if (locked.current === 'ai') {
+        if (nx < UNLOCK_AI) locked.current = null;
+        else {
+          target.current = 1;
+          return;
+        }
+      }
+
+      // Not locked: dragged far enough into a reveal zone → snap to that
+      // end's profile shot and lock, flipping the whole site's mode. Still
+      // mid-turn (the middle band) → just follow the cursor 1:1, no lock yet.
+      if (nx <= LOCK_BD) {
+        locked.current = 'bd';
+        target.current = 0;
+        setMode('bd');
+      } else if (nx >= LOCK_AI) {
+        locked.current = 'ai';
+        target.current = 1;
+        setMode('ai');
+      } else {
+        target.current = nx;
+      }
     };
 
     const onPointerMove = (e: PointerEvent) => setTargetFromX(e.clientX);
@@ -88,12 +126,6 @@ export default function Hero() {
         if (seamRef.current) {
           seamRef.current.style.opacity = String(0.15 + Math.abs(smooth.current - 0.5) * 0.5);
         }
-      }
-
-      if (modeRef.current === 'bd' && smooth.current > SWITCH_TO_AI) {
-        setMode('ai');
-      } else if (modeRef.current === 'ai' && smooth.current < SWITCH_TO_BD) {
-        setMode('bd');
       }
 
       rafId = requestAnimationFrame(tick);
@@ -125,6 +157,7 @@ export default function Hero() {
 
   const selectMode = (m: Mode) => {
     setMode(m);
+    locked.current = m;
     target.current = m === 'ai' ? 1 : 0;
   };
 
