@@ -307,7 +307,9 @@ export default function Hero() {
         </div>
       </nav>
 
-      <div className="absolute bottom-12 md:bottom-14 left-5 md:left-14 right-5 z-50">
+      {/* pointer-events-none lets the head-turn scrub keep working where the
+          headline overlaps the card; links re-enable their own events */}
+      <div className="pointer-events-none absolute bottom-12 md:bottom-14 left-5 md:left-14 right-5 z-50">
         <p className="text-sm text-neutral-700 mb-2">
           <span className="font-medium">Mikhail Smirnov</span>
           <span className="text-neutral-400"> · Batumi, Georgia</span>
@@ -351,7 +353,7 @@ export default function Hero() {
                 href={c.href}
                 target={c.href.startsWith('http') ? '_blank' : undefined}
                 rel={c.href.startsWith('http') ? 'noreferrer' : undefined}
-                className="inline-flex items-center gap-1.5 text-neutral-400 hover:text-neutral-900 transition-colors duration-200"
+                className="pointer-events-auto inline-flex items-center gap-1.5 text-neutral-400 hover:text-neutral-900 transition-colors duration-200"
               >
                 <Icon className="w-3.5 h-3.5" strokeWidth={1.75} />
                 {c.label}
