@@ -37,7 +37,6 @@ export default function Hero() {
   const [videoReady, setVideoReady]         = useState(false);
   const [videoAvailable, setVideoAvailable] = useState(true);
   const [scrolled, setScrolled]             = useState(false);
-  const [hintVisible, setHintVisible]       = useState(true);
 
   const seekingBd = useRef(false);
   const seekingAi = useRef(false);
@@ -47,15 +46,6 @@ export default function Hero() {
   const locked       = useRef<Mode | null>(null);
   const spotlightRef = useRef<HTMLDivElement>(null);
   const seamRef      = useRef<HTMLDivElement>(null);
-
-  const isTouch = window.matchMedia('(pointer: coarse)').matches;
-
-  // Auto-dismiss the explore hint after 4 s on desktop; stays until tap on touch.
-  useEffect(() => {
-    if (isTouch) return;
-    const t = setTimeout(() => setHintVisible(false), 4000);
-    return () => clearTimeout(t);
-  }, [isTouch]);
 
   useEffect(() => {
     const bd   = bdRef.current;
@@ -121,14 +111,12 @@ export default function Hero() {
         locked.current = tapped;
         target.current = tapped === 'ai' ? 1 : 0;
         setMode(tapped);
-        setHintVisible(false);
       }
     };
 
-    // Desktop: seam follows cursor; dismiss hint on first real hover.
+    // Desktop: scrub follows the cursor.
     const onPointerMove = (e: PointerEvent) => {
       if (e.pointerType === 'touch') return;
-      setHintVisible(false);
       setTargetFromX(e.clientX);
     };
 
@@ -258,21 +246,30 @@ export default function Hero() {
             </div>
           )}
 
-          {/* Explore hint — auto-fades on desktop, dismissed on first tap on touch */}
-          <div
-            className="absolute inset-x-0 bottom-0 flex items-end justify-between px-4 pb-3 pointer-events-none select-none"
-            style={{
-              opacity: hintVisible ? 1 : 0,
-              transition: 'opacity 0.7s ease',
-              background: 'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 100%)',
-            }}
+          {/* Side labels — the active persona reads at full strength */}
+          <span
+            className={`hidden sm:block absolute top-4 left-4 px-3 py-1.5 rounded-full bg-white/55 backdrop-blur-md text-[11px] tracking-[0.12em] uppercase text-neutral-800 pointer-events-none select-none transition-opacity duration-300 ${
+              mode === 'bd' ? 'opacity-100' : 'opacity-[0.45]'
+            }`}
           >
-            <span className="text-white/75 text-xs tracking-wide">← Business Dev</span>
-            <span className="text-white/45 text-[10px] tracking-[0.14em] uppercase">
-              {isTouch ? 'tap to switch' : 'move to explore'}
-            </span>
-            <span className="text-white/75 text-xs tracking-wide">AI & Automation →</span>
-          </div>
+            Business Dev
+          </span>
+          <span
+            className={`hidden sm:block absolute top-4 right-4 px-3 py-1.5 rounded-full bg-white/55 backdrop-blur-md text-[11px] tracking-[0.12em] uppercase text-neutral-800 pointer-events-none select-none transition-opacity duration-300 ${
+              mode === 'ai' ? 'opacity-100' : 'opacity-[0.45]'
+            }`}
+          >
+            AI Agents
+          </span>
+
+          {/* Switch CTA — invites the visitor to flip the persona */}
+          <button
+            type="button"
+            onClick={() => selectMode(mode === 'ai' ? 'bd' : 'ai')}
+            className="absolute top-2.5 sm:top-3.5 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/55 hover:bg-white/75 backdrop-blur-md text-[11px] sm:text-[13px] text-neutral-800 whitespace-nowrap transition-colors duration-200"
+          >
+            {mode === 'ai' ? '← Discover the business side' : 'Discover the automation side →'}
+          </button>
         </div>
       </div>
 

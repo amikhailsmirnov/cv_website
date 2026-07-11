@@ -19,12 +19,12 @@ export const HERO: Record<Mode, HeroContent> = {
   ai: {
     line1: 'Where logic',
     line2: 'meets autonomy.',
-    tags: ['n8n', 'RAG', 'Claude Code'],
+    tags: ['n8n', 'LLM Agents', 'RAG', 'Python', 'PostgreSQL', 'Claude Code'],
   },
   bd: {
     line1: 'Where deals',
     line2: 'meet momentum.',
-    tags: ['LatAm', 'GCC', 'EMEA'],
+    tags: ['LatAm', 'MENA', 'Africa', 'EMEA', 'APAC'],
   },
 };
 
