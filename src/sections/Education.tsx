@@ -15,7 +15,7 @@ export default function Education() {
   const items = EDUCATION[mode];
 
   return (
-    <section className="w-full bg-white py-16 px-5 md:px-14">
+    <section className="w-full bg-white dark:bg-[#0e0e10] transition-colors duration-300 py-16 px-5 md:px-14">
       <div className="max-w-5xl mx-auto">
         <Reveal>
           <p className="text-neutral-400 text-sm tracking-[0.1em] uppercase mb-8">
@@ -27,12 +27,12 @@ export default function Education() {
           <motion.div key={mode} className="sib-dim" {...fade}>
             {items.map((item, i) => (
               <Reveal key={item.school} delay={i * 0.06}>
-                <div className="dim-item flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 py-4 border-t border-neutral-100">
+                <div className="dim-item flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 py-4 border-t border-neutral-100 dark:border-neutral-800/60">
                   <div>
-                    <span className={i < 2 ? 'text-neutral-800' : 'text-neutral-400'}>{item.school}</span>
-                    <span className={`text-sm ${i < 2 ? 'text-neutral-400' : 'text-neutral-300'}`}> · {item.degree}</span>
+                    <span className={i < 2 ? 'text-neutral-800 dark:text-neutral-200' : 'text-neutral-400 dark:text-neutral-500'}>{item.school}</span>
+                    <span className={`text-sm ${i < 2 ? 'text-neutral-400 dark:text-neutral-500' : 'text-neutral-300 dark:text-neutral-600'}`}> · {item.degree}</span>
                   </div>
-                  <div className={`text-sm shrink-0 ${i < 2 ? 'text-neutral-400' : 'text-neutral-300'}`}>{item.years}</div>
+                  <div className={`text-sm shrink-0 ${i < 2 ? 'text-neutral-400 dark:text-neutral-500' : 'text-neutral-300 dark:text-neutral-600'}`}>{item.years}</div>
                 </div>
               </Reveal>
             ))}

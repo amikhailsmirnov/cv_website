@@ -40,6 +40,9 @@ body::after {
   height: 15%;
   background: linear-gradient(to bottom, transparent 0%, #ffffff 100%);
 }
+.dark .hero-gradient {
+  background: linear-gradient(to bottom, transparent 0%, #0e0e10 100%);
+}
 
 /* Lenis smooth scroll */
 html.lenis,
