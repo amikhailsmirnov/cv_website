@@ -44,6 +44,10 @@ export default function Hero() {
   const target       = useRef(AI_START);
   const smooth       = useRef(AI_START);
   const locked       = useRef<Mode | null>(null);
+  // First visit rests on the straight-looking split face; once a side is
+  // chosen the portrait sticks to that side's final pose until switched.
+  const chosen       = useRef(false);
+  const chosenMode   = useRef<Mode>('ai');
   const spotlightRef = useRef<HTMLDivElement>(null);
   const seamRef      = useRef<HTMLDivElement>(null);
 
@@ -85,8 +89,10 @@ export default function Hero() {
 
       if (nx <= LOCK_BD) {
         locked.current = 'bd'; target.current = 0; setMode('bd');
+        chosen.current = true; chosenMode.current = 'bd';
       } else if (nx >= LOCK_AI) {
         locked.current = 'ai'; target.current = 1; setMode('ai');
+        chosen.current = true; chosenMode.current = 'ai';
       } else {
         target.current = nx;
       }
@@ -111,6 +117,7 @@ export default function Hero() {
         locked.current = tapped;
         target.current = tapped === 'ai' ? 1 : 0;
         setMode(tapped);
+        chosen.current = true; chosenMode.current = tapped;
       }
     };
 
@@ -121,7 +128,10 @@ export default function Hero() {
     };
 
     const onPointerLeave = () => {
-      if (!locked.current) target.current = smooth.current;
+      if (locked.current) return;
+      target.current = chosen.current
+        ? (chosenMode.current === 'ai' ? 1 : 0)
+        : AI_START;
     };
 
     let rafId = 0;
@@ -185,6 +195,8 @@ export default function Hero() {
     setMode(m);
     locked.current = m;
     target.current = m === 'ai' ? 1 : 0;
+    chosen.current = true;
+    chosenMode.current = m;
   };
 
   const scrollToContent = () => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
