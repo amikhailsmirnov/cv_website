@@ -275,6 +275,7 @@ export default function Hero() {
               src={VIDEO_SRC.bd}
               muted playsInline preload="auto"
               disablePictureInPicture disableRemotePlayback
+              controlsList="nodownload noplaybackrate nofullscreen noremoteplayback"
               className="absolute inset-0 w-full h-full object-cover"
               style={{ opacity: 1 }}
             />
@@ -283,9 +284,14 @@ export default function Hero() {
               src={VIDEO_SRC.ai}
               muted playsInline preload="auto"
               disablePictureInPicture disableRemotePlayback
+              controlsList="nodownload noplaybackrate nofullscreen noremoteplayback"
               className="absolute inset-0 w-full h-full object-cover"
               style={{ opacity: 0 }}
             />
+            {/* Shield: keeps hover off the <video> element so the browser
+                never shows its media overlay buttons; events still bubble
+                to the card, so the scrub is unaffected. */}
+            <div className="absolute inset-0" aria-hidden="true" />
           </div>
 
           {(!videoAvailable || !videoReady) && (
