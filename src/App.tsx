@@ -7,6 +7,7 @@ import Education from './sections/Education';
 import Info from './sections/Info';
 import Footer from './sections/Footer';
 import Cursor from './components/Cursor';
+import ThemeToggle from './components/ThemeToggle';
 import { useLenis } from './lib/useLenis';
 import { ModeProvider, useMode } from './lib/ModeContext';
 
@@ -27,7 +28,8 @@ export default function App() {
     <ModeProvider>
       <PageTitle />
       <Cursor />
-      <div className="min-h-screen bg-white text-neutral-900 tracking-[-0.02em]">
+      <ThemeToggle />
+      <div className="min-h-screen bg-white dark:bg-[#0e0e10] text-neutral-900 dark:text-[#f2f2f4] transition-colors duration-300 tracking-[-0.02em]">
         <Hero />
         <Statement />
         <Manifesto />

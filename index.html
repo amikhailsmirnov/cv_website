@@ -8,6 +8,14 @@
       href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✳️</text></svg>"
     />
     <title>Mikhail Smirnov · AI Automation Architect & Head of BD</title>
+    <!-- Apply the saved/OS theme before first paint to avoid a flash -->
+    <script>
+      try {
+        var t = localStorage.getItem('cv-theme');
+        if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches))
+          document.documentElement.classList.add('dark');
+      } catch (e) {}
+    </script>
     <meta
       name="description"
       content="Mikhail Smirnov, AI Automation Architect and Head of Business Development. Two sides, one person."

@@ -15,7 +15,7 @@ export default function Statement() {
   const phrases = STATEMENT[mode];
 
   return (
-    <section className="w-full bg-[#f2f2f4] py-24 px-5 md:px-14">
+    <section className="w-full bg-[#f2f2f4] dark:bg-[#141416] transition-colors duration-300 py-24 px-5 md:px-14">
       <div className="max-w-5xl mx-auto">
         <Reveal>
           <p className="text-neutral-400 text-sm tracking-[0.1em] uppercase mb-8">
@@ -26,7 +26,7 @@ export default function Statement() {
         <AnimatePresence mode="wait" initial={false}>
           <motion.h2
             key={mode}
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.0] tracking-[-0.04em] text-neutral-900"
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.0] tracking-[-0.04em] text-neutral-900 dark:text-[#f2f2f4]"
             {...fade}
           >
             {phrases.map((phrase, i) => (

@@ -71,7 +71,7 @@ export default function Cursor() {
         className="fixed top-0 left-0 z-[9999] pointer-events-none"
         style={{ opacity: 0, willChange: 'transform' }}
       >
-        <div className="-translate-x-1/2 -translate-y-1/2 w-[5px] h-[5px] rounded-full bg-neutral-900" />
+        <div className="-translate-x-1/2 -translate-y-1/2 w-[5px] h-[5px] rounded-full bg-neutral-900 dark:bg-neutral-100" />
       </div>
       <div
         ref={ringRef}

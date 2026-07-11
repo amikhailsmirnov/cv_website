@@ -15,7 +15,7 @@ export default function Manifesto() {
   const items = MANIFESTO[mode];
 
   return (
-    <section className="w-full bg-white py-20 px-5 md:px-14">
+    <section className="w-full bg-white dark:bg-[#0e0e10] transition-colors duration-300 py-20 px-5 md:px-14">
       <div className="max-w-5xl mx-auto">
         <Reveal>
           <p className="text-neutral-400 text-sm tracking-[0.1em] uppercase mb-8">
@@ -27,13 +27,13 @@ export default function Manifesto() {
           <motion.div key={mode} className="sib-dim" {...fade}>
             {items.map((item, i) => (
               <Reveal key={item.idx} delay={i * 0.1}>
-                <div className="dim-item grid md:grid-cols-[80px_1fr] gap-6 py-7 border-t border-neutral-100">
-                  <div className="text-neutral-300 text-sm pt-1">{item.idx}</div>
+                <div className="dim-item grid md:grid-cols-[80px_1fr] gap-6 py-7 border-t border-neutral-100 dark:border-neutral-800/60">
+                  <div className="text-neutral-300 dark:text-neutral-600 text-sm pt-1">{item.idx}</div>
                   <div>
-                    <h3 className="font-playfair italic text-2xl sm:text-3xl text-neutral-900">
+                    <h3 className="font-playfair italic text-2xl sm:text-3xl text-neutral-900 dark:text-[#f2f2f4]">
                       {item.title}
                     </h3>
-                    <p className="text-neutral-500 text-base mt-2 leading-relaxed">{item.desc}</p>
+                    <p className="text-neutral-500 dark:text-neutral-400 text-base mt-2 leading-relaxed">{item.desc}</p>
                   </div>
                 </div>
               </Reveal>

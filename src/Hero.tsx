@@ -258,12 +258,12 @@ export default function Hero() {
   const hero = HERO[mode];
 
   return (
-    <section className="relative w-full overflow-hidden h-[100dvh] bg-white">
+    <section className="relative w-full overflow-hidden h-[100dvh] bg-white dark:bg-[#0e0e10] transition-colors duration-300">
       <div className="absolute inset-0 z-30 flex justify-center items-start pt-[88px]">
         <div
           ref={cardRef}
           data-cursor="scrub"
-          className="relative aspect-square md:aspect-[16/9] w-[min(92vw,calc(100dvh_-_380px))] md:w-[min(92vw,calc((100dvh_-_250px)*16/9),1440px)] rounded-2xl md:rounded-[2rem] overflow-hidden select-none bg-neutral-100 shadow-2xl shadow-neutral-900/12 ring-1 ring-neutral-900/5"
+          className="relative aspect-square md:aspect-[16/9] w-[min(92vw,calc(100dvh_-_380px))] md:w-[min(92vw,calc((100dvh_-_250px)*16/9),1440px)] rounded-2xl md:rounded-[2rem] overflow-hidden select-none bg-neutral-100 dark:bg-neutral-900 shadow-2xl shadow-neutral-900/12 ring-1 ring-neutral-900/5 dark:ring-white/10"
           style={{ touchAction: 'pan-y' }}
         >
           <div
@@ -340,8 +340,8 @@ export default function Hero() {
           <div
             className={`flex rounded-full p-1 items-center gap-1 transition-all duration-300 ${
               scrolled
-                ? 'bg-white/75 backdrop-blur-md shadow-sm shadow-neutral-900/8 ring-1 ring-neutral-900/8'
-                : 'bg-neutral-100'
+                ? 'bg-white/75 dark:bg-[#141416]/80 backdrop-blur-md shadow-sm shadow-neutral-900/8 ring-1 ring-neutral-900/8 dark:ring-white/10'
+                : 'bg-neutral-100 dark:bg-[#141416]'
             }`}
           >
             {MODES.map((m) => (
@@ -351,8 +351,8 @@ export default function Hero() {
                 aria-pressed={mode === m}
                 className={`px-4 py-2.5 sm:py-1.5 rounded-full text-xs sm:text-sm whitespace-nowrap transition-all duration-200 ${
                   mode === m
-                    ? 'bg-white text-neutral-900 shadow-sm'
-                    : 'text-neutral-400 hover:text-neutral-700'
+                    ? 'bg-white dark:bg-[#252528] text-neutral-900 dark:text-[#f2f2f4] shadow-sm'
+                    : 'text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'
                 }`}
               >
                 {MODE_LABEL[m]}
@@ -365,12 +365,12 @@ export default function Hero() {
       {/* pointer-events-none lets the head-turn scrub keep working where the
           headline overlaps the card; links re-enable their own events */}
       <div className="pointer-events-none absolute bottom-12 md:bottom-14 left-5 md:left-14 right-5 z-50">
-        <p className="text-sm text-neutral-700 mb-2">
+        <p className="text-sm text-neutral-700 dark:text-neutral-300 mb-2">
           <span className="font-medium">Mikhail Smirnov</span>
-          <span className="text-neutral-400"> · Batumi, Georgia</span>
+          <span className="text-neutral-400 dark:text-neutral-500"> · Batumi, Georgia</span>
         </p>
 
-        <h1 className="text-neutral-900 leading-[1.0]" key={mode}>
+        <h1 className="text-neutral-900 dark:text-[#f2f2f4] leading-[1.0]" key={mode}>
           <span
             className="anim reveal block font-playfair italic text-4xl sm:text-6xl md:text-7xl"
             style={{ animationDelay: '0.4s' }}
@@ -390,7 +390,7 @@ export default function Hero() {
           style={{ animationDelay: '0.75s' }}
         >
           {hero.tags.map((tag) => (
-            <span key={tag} className="px-3 py-1 rounded-full border border-neutral-200 text-neutral-500 text-xs">
+            <span key={tag} className="px-3 py-1 rounded-full border border-neutral-200 dark:border-neutral-800 text-neutral-500 dark:text-neutral-400 text-xs">
               {tag}
             </span>
           ))}
@@ -409,7 +409,7 @@ export default function Hero() {
                 target={c.href.startsWith('http') ? '_blank' : undefined}
                 rel={c.href.startsWith('http') ? 'noreferrer' : undefined}
                 download={c.href.endsWith('.pdf') ? '' : undefined}
-                className="pointer-events-auto inline-flex items-center gap-1.5 text-neutral-400 hover:text-neutral-900 transition-colors duration-200"
+                className="pointer-events-auto inline-flex items-center gap-1.5 text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors duration-200"
               >
                 <Icon className="w-3.5 h-3.5" strokeWidth={1.75} />
                 {c.label}
@@ -419,7 +419,7 @@ export default function Hero() {
         </div>
 
         <p
-          className="anim fade mt-2.5 text-[11px] text-neutral-300 tracking-wide"
+          className="anim fade mt-2.5 text-[11px] text-neutral-300 dark:text-neutral-600 tracking-wide"
           style={{ animationDelay: '1s' }}
         >
           Open to new opportunities · English / Spanish / Russian
@@ -430,7 +430,7 @@ export default function Hero() {
         <button
           aria-label="Scroll to content"
           onClick={scrollToContent}
-          className="w-8 h-12 rounded-full border border-neutral-200 hover:border-neutral-400 flex items-start justify-center pt-2 transition-colors duration-200"
+          className="w-8 h-12 rounded-full border border-neutral-200 dark:border-neutral-800 hover:border-neutral-400 dark:hover:border-neutral-600 flex items-start justify-center pt-2 transition-colors duration-200"
         >
           <ArrowDown className="scroll-bounce w-4 h-4 text-neutral-400" strokeWidth={1.75} />
         </button>
