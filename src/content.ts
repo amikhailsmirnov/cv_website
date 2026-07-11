@@ -251,7 +251,7 @@ export const CONTACTS: ContactLink[] = [
   { label: '+995 59 100 4603', href: 'tel:+995591004603' },
   { label: 'linkedin.com/in/amikhailsmirnov', href: 'https://www.linkedin.com/in/amikhailsmirnov' },
   { label: 't.me/amikhailsmirnov', href: 'https://t.me/amikhailsmirnov' },
-  { label: 'Résumé (PDF)', href: '/Mikhail_Smirnov_Resume.pdf' },
+  { label: 'Résumé (PDF)', href: `${import.meta.env.BASE_URL}Mikhail_Smirnov_Resume.pdf` },
 ];
 
 export interface StatItem {

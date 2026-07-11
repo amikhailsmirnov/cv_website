@@ -13,9 +13,10 @@ const contactIcon = (href: string): LucideIcon => {
   return Send;
 };
 
+// BASE_URL keeps assets working when hosted under a subpath (GitHub Pages).
 const VIDEO_SRC: Record<Mode, string> = {
-  bd: '/hero-bd.mp4',
-  ai: '/hero-ai.mp4',
+  bd: `${import.meta.env.BASE_URL}hero-bd.mp4`,
+  ai: `${import.meta.env.BASE_URL}hero-ai.mp4`,
 };
 
 const LERP      = 0.22;
