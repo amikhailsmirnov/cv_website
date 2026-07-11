@@ -217,19 +217,18 @@ export default function Hero() {
               videoAvailable && videoReady ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            {/* object-top crops the white/faded bottom edge left by EZRemove */}
             <video
               ref={bdRef}
               src={VIDEO_SRC.bd}
               muted playsInline preload="auto"
-              className="absolute inset-0 w-full h-full object-cover object-top"
+              className="absolute inset-0 w-full h-full object-cover"
               style={{ opacity: 0 }}
             />
             <video
               ref={aiRef}
               src={VIDEO_SRC.ai}
               muted playsInline preload="auto"
-              className="absolute inset-0 w-full h-full object-cover object-top"
+              className="absolute inset-0 w-full h-full object-cover"
               style={{ opacity: 1 }}
             />
           </div>
@@ -342,7 +341,7 @@ export default function Hero() {
         </div>
 
         <div
-          className="anim fade mt-3 flex items-center justify-center gap-x-4 gap-y-1.5 text-xs flex-wrap"
+          className="anim fade mt-3 flex items-center gap-x-4 gap-y-1.5 text-xs flex-wrap"
           style={{ animationDelay: '0.9s' }}
         >
           {CONTACTS.map((c) => {
