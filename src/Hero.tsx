@@ -41,13 +41,13 @@ export default function Hero() {
   const seekingBd = useRef(false);
   const seekingAi = useRef(false);
 
-  const target       = useRef(AI_START);
-  const smooth       = useRef(AI_START);
+  const target       = useRef(BD_START);
+  const smooth       = useRef(BD_START);
   const locked       = useRef<Mode | null>(null);
-  // First visit rests on the straight-looking split face; once a side is
-  // chosen the portrait sticks to that side's final pose until switched.
+  // First visit rests on the straight-looking split face; after the first
+  // hover the portrait sticks to the current side's final pose until switched.
   const chosen       = useRef(false);
-  const chosenMode   = useRef<Mode>('ai');
+  const chosenMode   = useRef<Mode>('bd');
   const spotlightRef = useRef<HTMLDivElement>(null);
   const seamRef      = useRef<HTMLDivElement>(null);
 
@@ -121,9 +121,11 @@ export default function Hero() {
       }
     };
 
-    // Desktop: scrub follows the cursor.
+    // Desktop: scrub follows the cursor; the first hover counts as a choice,
+    // so leaving rests on the current side's final pose.
     const onPointerMove = (e: PointerEvent) => {
       if (e.pointerType === 'touch') return;
+      chosen.current = true;
       setTargetFromX(e.clientX);
     };
 
@@ -131,7 +133,7 @@ export default function Hero() {
       if (locked.current) return;
       target.current = chosen.current
         ? (chosenMode.current === 'ai' ? 1 : 0)
-        : AI_START;
+        : BD_START;
     };
 
     let rafId = 0;
@@ -222,14 +224,14 @@ export default function Hero() {
               src={VIDEO_SRC.bd}
               muted playsInline preload="auto"
               className="absolute inset-0 w-full h-full object-cover"
-              style={{ opacity: 0 }}
+              style={{ opacity: 1 }}
             />
             <video
               ref={aiRef}
               src={VIDEO_SRC.ai}
               muted playsInline preload="auto"
               className="absolute inset-0 w-full h-full object-cover"
-              style={{ opacity: 1 }}
+              style={{ opacity: 0 }}
             />
           </div>
 

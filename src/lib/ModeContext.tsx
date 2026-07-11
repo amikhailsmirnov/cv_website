@@ -11,9 +11,9 @@ interface ModeContextValue {
 const ModeContext = createContext<ModeContextValue | null>(null);
 
 export function ModeProvider({ children }: { children: ReactNode }) {
-  // The page opens on the AI clip's first frame (center-right of the scrub),
-  // so AI is the opening mode.
-  const [mode, setMode] = useState<Mode>('ai');
+  // Business Dev is the opening persona; the portrait rests on the
+  // straight-looking first frame until the visitor interacts.
+  const [mode, setMode] = useState<Mode>('bd');
   return (
     <ModeContext.Provider value={{ mode, setMode }}>
       {children}
