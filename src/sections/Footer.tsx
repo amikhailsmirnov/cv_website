@@ -21,6 +21,7 @@ export default function Footer() {
                 href={link.href}
                 target={link.href.startsWith('http') ? '_blank' : undefined}
                 rel={link.href.startsWith('http') ? 'noreferrer' : undefined}
+                download={link.href.endsWith('.pdf') ? '' : undefined}
                 className="dim-item text-white/50 text-sm hover:text-white transition-colors duration-200"
               >
                 {link.label}

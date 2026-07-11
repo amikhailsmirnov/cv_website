@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowDown, User, Bot, Mail, Phone, Linkedin, Send } from 'lucide-react';
+import { ArrowDown, User, Bot, Mail, Phone, Linkedin, Send, FileDown } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useMode } from './lib/ModeContext';
 import { MODE_LABEL, HERO, CONTACTS } from './content';
@@ -9,6 +9,7 @@ const contactIcon = (href: string): LucideIcon => {
   if (href.startsWith('mailto:')) return Mail;
   if (href.startsWith('tel:')) return Phone;
   if (href.includes('linkedin')) return Linkedin;
+  if (href.endsWith('.pdf')) return FileDown;
   return Send;
 };
 
@@ -37,6 +38,9 @@ export default function Hero() {
   const [videoReady, setVideoReady]         = useState(false);
   const [videoAvailable, setVideoAvailable] = useState(true);
   const [scrolled, setScrolled]             = useState(false);
+  const [tapHintHidden, setTapHintHidden]   = useState(false);
+
+  const isTouch = window.matchMedia('(pointer: coarse)').matches;
 
   const seekingBd = useRef(false);
   const seekingAi = useRef(false);
@@ -95,6 +99,13 @@ export default function Hero() {
         chosen.current = true; chosenMode.current = 'ai';
       } else {
         target.current = nx;
+        // Content follows the visual crossfade (0.45–0.55): once one video is
+        // fully visible, the CV copy matches it — no persona/text mismatch.
+        if (nx >= AI_START) {
+          setMode('ai'); chosenMode.current = 'ai';
+        } else if (nx <= BD_START) {
+          setMode('bd'); chosenMode.current = 'bd';
+        }
       }
     };
 
@@ -118,6 +129,7 @@ export default function Hero() {
         target.current = tapped === 'ai' ? 1 : 0;
         setMode(tapped);
         chosen.current = true; chosenMode.current = tapped;
+        setTapHintHidden(true);
       }
     };
 
@@ -223,6 +235,7 @@ export default function Hero() {
               ref={bdRef}
               src={VIDEO_SRC.bd}
               muted playsInline preload="auto"
+              disablePictureInPicture disableRemotePlayback
               className="absolute inset-0 w-full h-full object-cover"
               style={{ opacity: 1 }}
             />
@@ -230,6 +243,7 @@ export default function Hero() {
               ref={aiRef}
               src={VIDEO_SRC.ai}
               muted playsInline preload="auto"
+              disablePictureInPicture disableRemotePlayback
               className="absolute inset-0 w-full h-full object-cover"
               style={{ opacity: 0 }}
             />
@@ -260,6 +274,15 @@ export default function Hero() {
             </div>
           )}
 
+          {/* Touch-only affordance for the tap-to-switch mechanic */}
+          {isTouch && (
+            <div
+              className="absolute bottom-2.5 left-1/2 -translate-x-1/2 px-3.5 py-1.5 rounded-full bg-black/45 text-white/85 text-[11px] tracking-wide whitespace-nowrap pointer-events-none select-none transition-opacity duration-500 z-10"
+              style={{ opacity: tapHintHidden ? 0 : 1 }}
+            >
+              Tap left or right to switch
+            </div>
+          )}
         </div>
       </div>
 
@@ -339,6 +362,7 @@ export default function Hero() {
                 href={c.href}
                 target={c.href.startsWith('http') ? '_blank' : undefined}
                 rel={c.href.startsWith('http') ? 'noreferrer' : undefined}
+                download={c.href.endsWith('.pdf') ? '' : undefined}
                 className="pointer-events-auto inline-flex items-center gap-1.5 text-neutral-400 hover:text-neutral-900 transition-colors duration-200"
               >
                 <Icon className="w-3.5 h-3.5" strokeWidth={1.75} />
@@ -347,6 +371,13 @@ export default function Hero() {
             );
           })}
         </div>
+
+        <p
+          className="anim fade mt-2.5 text-[11px] text-neutral-300 tracking-wide"
+          style={{ animationDelay: '1s' }}
+        >
+          Open to new opportunities · English / Spanish / Russian
+        </p>
       </div>
 
       <div className="hidden sm:block absolute bottom-10 right-10 md:right-14 z-50">

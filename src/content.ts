@@ -24,7 +24,7 @@ export const HERO: Record<Mode, HeroContent> = {
   bd: {
     line1: 'Where deals',
     line2: 'meet momentum.',
-    tags: ['LatAm', 'MENA', 'Africa', 'EMEA', 'APAC'],
+    tags: ['LatAm', 'NAMER', 'MENA', 'Africa', 'EMEA', 'APAC'],
   },
 };
 
@@ -110,7 +110,7 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       company: 'Go Mobile',
       role: 'AI Automation Architect',
       period: 'Nov 2025 - May 2026',
-      location: 'Jakarta, Indonesia',
+      location: 'Jakarta, Indonesia · Digital Agency',
       bullets: [
         'Interviewed 9 teams, dug up 97 real process problems, and shipped 7 AI automations from scratch. They now save about 35 hours of manual work a week and cut operational overhead by 30%.',
         'Counted the ROI before building anything: 10+ automation opportunities worth around $67K a year in projected savings.',
@@ -121,8 +121,8 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
     {
       company: 'afp.ai',
       role: 'Head of Business Development',
-      period: 'Jan 2024 - Present',
-      location: 'Dubai, UAE',
+      period: 'Feb 2024 - Present',
+      location: 'Dubai, UAE · AdTech',
       note: 'Hired to open doors. Built an agent that knocks on thousands of them a week.',
       bullets: [
         'Designed and shipped a fully autonomous multi-channel cold outreach agent that runs the whole pipeline, from finding a lead to closing the deal.',
@@ -134,7 +134,7 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       company: 'Xenara Inc.',
       role: 'Head of Sales',
       period: 'Jun 2025 - Nov 2025',
-      location: 'Toronto, Canada',
+      location: 'Toronto, Canada · AI SaaS',
       note: 'Hired to sell. Built this automation so I could sell faster.',
       bullets: [
         'Set up automatic transcription and AI analysis of client calls: the system pulls out intent and objections and writes structured notes straight into the CRM, no manual entry.',
@@ -144,8 +144,8 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
     {
       company: 'Air Agency',
       role: 'Social Media Team Lead',
-      period: 'Aug 2017 - Aug 2019',
-      location: 'Marbella, Spain',
+      period: 'Aug 2017 - Oct 2019',
+      location: 'Marbella, Spain · Social Media',
       note: 'Hired to run social media. Wrote Python that ran it for me.',
       bullets: [
         'Wrote a custom Python bot suite from scratch to run Instagram and Facebook campaigns: audience targeting, auto-commenting on trigger hashtags, and a DM chatbot that qualified leads and only passed the tricky cases to a human.',
@@ -158,7 +158,7 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       company: 'afp.ai',
       role: 'Partnerships Manager → Head of Business Development',
       period: 'Apr 2023 - Present',
-      location: 'Dubai, UAE',
+      location: 'Dubai, UAE · AdTech',
       bullets: [
         'Run a client portfolio doing around $144K in quarterly recurring revenue across LatAm, MENA, Africa, EMEA and APAC. 18 of those partners I brought in myself: 12 publishers, 4 agencies and 2 sellers.',
         'Lead and train a team of 5. KPI attainment is up 30% and partnership engagement up 21% within six months.',
@@ -171,7 +171,7 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       company: 'Xenara Inc.',
       role: 'Head of Sales',
       period: 'Jun 2025 - Nov 2025',
-      location: 'Toronto, Canada',
+      location: 'Toronto, Canada · AI SaaS',
       bullets: [
         'Built the sales engine from nothing: CRM, workflows, performance tracking and multi-channel lead gen through Apollo.io and LinkedIn Sales Navigator.',
         'Walked away with 3 closed enterprise deals from a standing start, one of them with a global e-commerce company.',
@@ -182,7 +182,7 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       company: 'Keywords Studios',
       role: 'Customer Experience Manager',
       period: 'Oct 2021 - Apr 2023',
-      location: 'Montreal, Canada',
+      location: 'Montreal, Canada · Gaming',
       bullets: [
         'Managed a team of 10 supporting a game with 140M+ downloads worldwide.',
         'Top 3 employee of the month, every single month, for a year straight.',
@@ -192,7 +192,7 @@ export const EXPERIENCE: Record<Mode, ExperienceItem[]> = {
       company: 'PartyTeam',
       role: 'Events Lead',
       period: 'Oct 2015 - Nov 2019',
-      location: 'Marbella, Spain',
+      location: 'Marbella, Spain · Events',
       bullets: [
         'Planned and ran over 200 events, parties and concerts, some up to 35,000 people.',
         'Brought in 25 new regular clients every year and handled the VIP relationships myself.',
@@ -251,6 +251,7 @@ export const CONTACTS: ContactLink[] = [
   { label: '+995 59 100 4603', href: 'tel:+995591004603' },
   { label: 'linkedin.com/in/amikhailsmirnov', href: 'https://www.linkedin.com/in/amikhailsmirnov' },
   { label: 't.me/amikhailsmirnov', href: 'https://t.me/amikhailsmirnov' },
+  { label: 'Résumé (PDF)', href: '/Mikhail_Smirnov_Resume.pdf' },
 ];
 
 export interface StatItem {
