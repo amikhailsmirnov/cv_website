@@ -82,8 +82,15 @@ export default function Hero() {
     const onSeekedBd = () => { seekingBd.current = false; requestSeek(bd, bdProgress(), seekingBd); };
     const onSeekedAi = () => { seekingAi.current = false; requestSeek(ai, aiProgress(), seekingAi); };
 
+    // Map the pointer to the CARD's bounds (not the window) so the scrub
+    // position matches the finger/cursor exactly.
+    const cardX = (clientX: number) => {
+      const r = card?.getBoundingClientRect();
+      return r ? clamp01((clientX - r.left) / r.width) : 0.5;
+    };
+
     const setTargetFromX = (clientX: number) => {
-      const nx = clamp01(clientX / window.innerWidth);
+      const nx = cardX(clientX);
 
       if (locked.current === 'bd') {
         if (nx > UNLOCK_BD) locked.current = null; else { target.current = 0; return; }
@@ -109,22 +116,35 @@ export default function Hero() {
       }
     };
 
-    // Touch: short tap on left/right half of card switches mode.
-    let tapStartX  = 0;
-    let tapStartMs = 0;
+    // Touch: horizontal drag scrubs the head turn (vertical scroll stays
+    // native via touch-action: pan-y); a short tap switches sides.
+    let tapStartX     = 0;
+    let tapStartMs    = 0;
+    let touchDown     = false;
+    let touchMoved    = 0;
+    let touchDragging = false;
+
+    const settleAfterDrag = () => {
+      if (!locked.current)
+        target.current = chosenMode.current === 'ai' ? 1 : 0;
+    };
 
     const onPointerDown = (e: PointerEvent) => {
       if (e.pointerType !== 'touch') return;
       tapStartX  = e.clientX;
       tapStartMs = Date.now();
+      touchDown = true; touchMoved = 0; touchDragging = false;
     };
 
     const onPointerUp = (e: PointerEvent) => {
       if (e.pointerType !== 'touch') return;
+      touchDown = false;
       const moved   = Math.abs(e.clientX - tapStartX);
       const elapsed = Date.now() - tapStartMs;
-      if (moved < 15 && elapsed < 300) {
-        const tapped: Mode = clamp01(e.clientX / window.innerWidth) < 0.5 ? 'bd' : 'ai';
+      if (touchDragging) {
+        settleAfterDrag();
+      } else if (moved < 15 && elapsed < 300) {
+        const tapped: Mode = cardX(e.clientX) < 0.5 ? 'bd' : 'ai';
         locked.current = tapped;
         target.current = tapped === 'ai' ? 1 : 0;
         setMode(tapped);
@@ -133,10 +153,27 @@ export default function Hero() {
       }
     };
 
-    // Desktop: scrub follows the cursor; the first hover counts as a choice,
+    // Browser claimed the gesture for scrolling: settle the portrait.
+    const onPointerCancel = (e: PointerEvent) => {
+      if (e.pointerType !== 'touch') return;
+      touchDown = false;
+      if (touchDragging) settleAfterDrag();
+    };
+
+    // Scrub follows the pointer; the first interaction counts as a choice,
     // so leaving rests on the current side's final pose.
     const onPointerMove = (e: PointerEvent) => {
-      if (e.pointerType === 'touch') return;
+      if (e.pointerType === 'touch') {
+        if (!touchDown) return;
+        touchMoved = Math.max(touchMoved, Math.abs(e.clientX - tapStartX));
+        if (touchMoved > 10) {
+          touchDragging = true;
+          setTapHintHidden(true);
+          chosen.current = true;
+          setTargetFromX(e.clientX);
+        }
+        return;
+      }
       chosen.current = true;
       setTargetFromX(e.clientX);
     };
@@ -180,10 +217,11 @@ export default function Hero() {
       if (video.error) onError();
     }
 
-    card?.addEventListener('pointerdown',  onPointerDown);
-    card?.addEventListener('pointerup',    onPointerUp);
-    card?.addEventListener('pointermove',  onPointerMove);
-    card?.addEventListener('pointerleave', onPointerLeave);
+    card?.addEventListener('pointerdown',   onPointerDown);
+    card?.addEventListener('pointerup',     onPointerUp);
+    card?.addEventListener('pointermove',   onPointerMove);
+    card?.addEventListener('pointerleave',  onPointerLeave);
+    card?.addEventListener('pointercancel', onPointerCancel);
 
     const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.5);
     onScroll();
@@ -197,10 +235,11 @@ export default function Hero() {
         video.removeEventListener('seeked', onSeeked);
         video.removeEventListener('error', onError);
       }
-      card?.removeEventListener('pointerdown',  onPointerDown);
-      card?.removeEventListener('pointerup',    onPointerUp);
-      card?.removeEventListener('pointermove',  onPointerMove);
-      card?.removeEventListener('pointerleave', onPointerLeave);
+      card?.removeEventListener('pointerdown',   onPointerDown);
+      card?.removeEventListener('pointerup',     onPointerUp);
+      card?.removeEventListener('pointermove',   onPointerMove);
+      card?.removeEventListener('pointerleave',  onPointerLeave);
+      card?.removeEventListener('pointercancel', onPointerCancel);
       window.removeEventListener('scroll', onScroll);
     };
   }, [setMode]);
@@ -223,7 +262,7 @@ export default function Hero() {
         <div
           ref={cardRef}
           data-cursor="scrub"
-          className="relative aspect-[3/2] md:aspect-[16/9] w-[min(92vw,calc((100dvh_-_250px)*3/2))] md:w-[min(92vw,calc((100dvh_-_250px)*16/9),1440px)] rounded-2xl md:rounded-[2rem] overflow-hidden select-none bg-neutral-100 shadow-2xl shadow-neutral-900/12 ring-1 ring-neutral-900/5"
+          className="relative aspect-square md:aspect-[16/9] w-[min(92vw,calc(100dvh_-_380px))] md:w-[min(92vw,calc((100dvh_-_250px)*16/9),1440px)] rounded-2xl md:rounded-[2rem] overflow-hidden select-none bg-neutral-100 shadow-2xl shadow-neutral-900/12 ring-1 ring-neutral-900/5"
           style={{ touchAction: 'pan-y' }}
         >
           <div
@@ -280,7 +319,7 @@ export default function Hero() {
               className="absolute bottom-2.5 left-1/2 -translate-x-1/2 px-3.5 py-1.5 rounded-full bg-black/45 text-white/85 text-[11px] tracking-wide whitespace-nowrap pointer-events-none select-none transition-opacity duration-500 z-10"
               style={{ opacity: tapHintHidden ? 0 : 1 }}
             >
-              Tap left or right to switch
+              Slide or tap to switch sides
             </div>
           )}
         </div>
@@ -303,7 +342,7 @@ export default function Hero() {
                 key={m}
                 onClick={() => selectMode(m)}
                 aria-pressed={mode === m}
-                className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm whitespace-nowrap transition-all duration-200 ${
+                className={`px-4 py-2.5 sm:py-1.5 rounded-full text-xs sm:text-sm whitespace-nowrap transition-all duration-200 ${
                   mode === m
                     ? 'bg-white text-neutral-900 shadow-sm'
                     : 'text-neutral-400 hover:text-neutral-700'
