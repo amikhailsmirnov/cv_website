@@ -197,7 +197,7 @@ export default function Hero() {
         <div
           ref={cardRef}
           data-cursor="scrub"
-          className="relative aspect-[3/2] md:aspect-[16/9] w-[92vw] max-w-[1120px] max-h-[calc(100dvh-240px)] rounded-2xl md:rounded-[2rem] overflow-hidden select-none bg-neutral-100 shadow-2xl shadow-neutral-900/12 ring-1 ring-neutral-900/5"
+          className="relative aspect-[3/2] md:aspect-[16/9] w-[min(92vw,calc((100dvh_-_250px)*3/2))] md:w-[min(92vw,calc((100dvh_-_250px)*16/9),1440px)] rounded-2xl md:rounded-[2rem] overflow-hidden select-none bg-neutral-100 shadow-2xl shadow-neutral-900/12 ring-1 ring-neutral-900/5"
           style={{ touchAction: 'pan-y' }}
         >
           <div
