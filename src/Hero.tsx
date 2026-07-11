@@ -193,11 +193,11 @@ export default function Hero() {
 
   return (
     <section className="relative w-full overflow-hidden h-[100dvh] bg-white">
-      <div className="absolute inset-0 z-30 flex justify-center items-center pt-24 pb-64 md:pt-20 md:pb-32">
+      <div className="absolute inset-0 z-30 flex justify-center items-start pt-[88px]">
         <div
           ref={cardRef}
           data-cursor="scrub"
-          className="relative aspect-[3/2] md:aspect-[19/9] w-[92vw] max-w-[1120px] rounded-2xl md:rounded-[2rem] overflow-hidden select-none bg-neutral-100 shadow-2xl shadow-neutral-900/12 ring-1 ring-neutral-900/5"
+          className="relative aspect-[3/2] md:aspect-[16/9] w-[92vw] max-w-[1120px] max-h-[calc(100dvh-240px)] rounded-2xl md:rounded-[2rem] overflow-hidden select-none bg-neutral-100 shadow-2xl shadow-neutral-900/12 ring-1 ring-neutral-900/5"
           style={{ touchAction: 'pan-y' }}
         >
           <div
@@ -246,30 +246,6 @@ export default function Hero() {
             </div>
           )}
 
-          {/* Side labels — the active persona reads at full strength */}
-          <span
-            className={`hidden sm:block absolute top-4 left-4 px-3 py-1.5 rounded-full bg-white/55 backdrop-blur-md text-[11px] tracking-[0.12em] uppercase text-neutral-800 pointer-events-none select-none transition-opacity duration-300 ${
-              mode === 'bd' ? 'opacity-100' : 'opacity-[0.45]'
-            }`}
-          >
-            Business Dev
-          </span>
-          <span
-            className={`hidden sm:block absolute top-4 right-4 px-3 py-1.5 rounded-full bg-white/55 backdrop-blur-md text-[11px] tracking-[0.12em] uppercase text-neutral-800 pointer-events-none select-none transition-opacity duration-300 ${
-              mode === 'ai' ? 'opacity-100' : 'opacity-[0.45]'
-            }`}
-          >
-            AI Agents
-          </span>
-
-          {/* Switch CTA — invites the visitor to flip the persona */}
-          <button
-            type="button"
-            onClick={() => selectMode(mode === 'ai' ? 'bd' : 'ai')}
-            className="absolute top-2.5 sm:top-3.5 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/55 hover:bg-white/75 backdrop-blur-md text-[11px] sm:text-[13px] text-neutral-800 whitespace-nowrap transition-colors duration-200"
-          >
-            {mode === 'ai' ? '← Discover the business side' : 'Discover the automation side →'}
-          </button>
         </div>
       </div>
 
